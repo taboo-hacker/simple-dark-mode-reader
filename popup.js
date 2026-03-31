@@ -235,5 +235,61 @@ function setFontSize(size) {
     });
 }
 
+// 检查 AdGuard 状态
+function checkAdGuardStatus() {
+    chrome.runtime.sendMessage({ type: 'checkAdGuardStatus' }, (response) => {
+        const statusElement = document.getElementById('adguard-status');
+        const assistantButton = document.getElementById('open-adguard-assistant');
+        
+        if (response.installed) {
+            statusElement.textContent = `AdGuard 已安装 ${response.status.enabled ? '(已启用)' : '(已禁用)'}`;
+            statusElement.className = 'status-message adguard-status-installed';
+            assistantButton.disabled = !response.status.enabled;
+        } else {
+            statusElement.textContent = 'AdGuard 未安装';
+            statusElement.className = 'status-message adguard-status-not-installed';
+            assistantButton.disabled = true;
+        }
+    });
+}
+
+// 打开 AdGuard 助手
+function openAdGuardAssistant() {
+    if (!currentTab) return;
+    
+    chrome.runtime.sendMessage({ 
+        type: 'openAdGuardAssistant', 
+        tabId: currentTab.id 
+    }, (response) => {
+        if (response && response.success) {
+            console.log('AdGuard 助手已打开');
+        } else {
+            console.error('打开 AdGuard 助手失败');
+        }
+    });
+}
+
+// 绑定 AdGuard 相关事件监听器
+function bindAdGuardEventListeners() {
+    // 打开 AdGuard 助手按钮
+    document.getElementById('open-adguard-assistant').addEventListener('click', openAdGuardAssistant);
+}
+
 // 初始化
-init();
+async function init() {
+    // 获取当前标签页
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    currentTab = tabs[0];
+    
+    // 加载用户设置
+    loadSettings();
+    
+    // 绑定事件监听器
+    bindEventListeners();
+    
+    // 绑定 AdGuard 事件监听器
+    bindAdGuardEventListeners();
+    
+    // 检查 AdGuard 状态
+    checkAdGuardStatus();
+}

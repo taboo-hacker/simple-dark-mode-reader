@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Simple Dark Mode & Reader",
-  "version": "1.0.0",
-  "description": "一键开启/关闭网页深色模式，净化阅读模式，隐藏广告和干扰元素，可调节字体大小，记忆用户设置",
+  "version": "1.1.0",
+  "description": "一键开启/关闭网页深色模式，净化阅读模式，隐藏广告和干扰元素，可调节字体大小，记忆用户设置，集成 AdGuard 功能",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -19,9 +19,13 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "management"
   ],
   "host_permissions": [
     "<all_urls>"
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
