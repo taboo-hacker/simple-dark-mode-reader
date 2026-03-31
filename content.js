@@ -1,6 +1,6 @@
 // Content script for Simple Dark Mode & Reader
 // This script runs in the context of web pages
-// 在页面加载时自动恢复所有功能状态
+// 页面加载时自动恢复所有功能状态，页面切换时重新应用
 
 (function() {
     'use strict';
@@ -12,7 +12,10 @@
     // 存储已应用的样式ID，避免重复注入
     const appliedStyles = new Set();
     
-    // 初始化函数 - 页面加载完成后自动恢复所有功能
+    // 存储当前设置，用于快速访问
+    let currentSettings = {};
+    
+    // 初始化函数 - 页面加载后自动恢复所有功能
     function initialize() {
         // 读取所有保存的设置
         const allSettings = [
@@ -25,112 +28,142 @@
         
         chrome.storage.local.get(allSettings, (result) => {
             console.log('Simple Dark Mode & Reader: 恢复功能状态', result);
+            currentSettings = result;
             
-            // 1. 深色模式
-            if (result.darkMode) {
-                applyDarkMode(result.darkModeLevel || 'standard');
-            }
-            
-            // 2. 深色增强
-            if (result.enhancedDark) {
-                applyEnhancedDark();
-            }
-            
-            // 3. 护眼黄底
-            if (result.eyeCare) {
-                applyEyeCare();
-            }
-            
-            // 4. 阅读模式
-            if (result.readerMode) {
-                applyReaderMode();
-            }
-            
-            // 5. 文本样式（字体、行距、间距）
-            if (result.fontSize || result.lineHeight || result.wordSpacing) {
-                applyTextStyle(result.fontSize, result.lineHeight, result.wordSpacing);
-            }
-            
-            // 6. 强制复制
-            if (result.forceCopy) {
-                applyForceCopy();
-            }
-            
-            // 7. 平滑滚动
-            if (result.smoothScroll) {
-                applySmoothScroll();
-            }
-            
-            // 8. 自动滚屏
-            if (result.autoScroll) {
-                applyAutoScroll();
-            }
-            
-            // 9. 视频增强
-            if (result.videoEnhance) {
-                applyVideoEnhance();
-            }
-            
-            // 10. 视频倍速
-            if (result.videoSpeed && result.videoSpeed !== 1.0) {
-                applyVideoSpeed(result.videoSpeed);
-            }
-            
-            // 11. 跳过广告
-            if (result.skipAds) {
-                applySkipAds();
-            }
-            
-            // 12. 禁止自动暂停
-            if (result.preventPause) {
-                applyPreventPause();
-            }
-            
-            // 13. 清除跟踪参数
-            if (result.removeTracking) {
-                removeTrackingParams();
-            }
-            
-            // 14. 隐藏Cookie提示
-            if (result.hideCookie) {
-                applyHideCookie();
-            }
-            
-            // 15. 禁止媒体权限
-            if (result.blockMediaPermission) {
-                applyBlockMediaPermission();
-            }
-            
-            // 16. 防指纹追踪
-            if (result.antiFingerprint) {
-                applyAntiFingerprint();
-            }
-            
-            // 17. 页面净化
-            if (result.cleanPage) {
-                applyCleanPage();
-            }
-            
-            // 18. 屏蔽弹窗
-            if (result.blockPopups) {
-                applyBlockPopups();
-            }
-            
-            // 19. 禁止自动刷新
-            if (result.blockRefresh) {
-                applyBlockRefresh();
-            }
-            
-            // 20. 关闭GIF动画
-            if (result.blockGif) {
-                applyBlockGif();
-            }
-            
-            // 21. 切换UA
-            if (result.userAgent && result.userAgent !== 'default') {
-                applyUserAgent(result.userAgent);
-            }
+            // 立即应用所有功能
+            applyAllSettings(result);
         });
+    }
+    
+    // 应用所有设置
+    function applyAllSettings(settings) {
+        // 1. 深色模式（优先执行）
+        if (settings.darkMode) {
+            applyDarkMode(settings.darkModeLevel || 'standard');
+        } else {
+            removeStyle('simple-dark-mode');
+        }
+        
+        // 2. 深色增强
+        if (settings.enhancedDark) {
+            applyEnhancedDark();
+        } else {
+            removeStyle('simple-enhanced-dark');
+        }
+        
+        // 3. 护眼黄底
+        if (settings.eyeCare) {
+            applyEyeCare();
+        } else {
+            removeStyle('simple-eye-care');
+        }
+        
+        // 4. 阅读模式
+        if (settings.readerMode) {
+            applyReaderMode();
+        } else {
+            removeStyle('simple-reader-mode');
+        }
+        
+        // 5. 文本样式（字体、行距、间距）
+        if (settings.fontSize || settings.lineHeight || settings.wordSpacing) {
+            applyTextStyle(settings.fontSize, settings.lineHeight, settings.wordSpacing);
+        } else {
+            removeStyle('simple-text-style');
+        }
+        
+        // 6. 强制复制
+        if (settings.forceCopy) {
+            applyForceCopy();
+        } else {
+            removeStyle('simple-force-copy');
+        }
+        
+        // 7. 平滑滚动
+        if (settings.smoothScroll) {
+            applySmoothScroll();
+        } else {
+            document.documentElement.style.scrollBehavior = 'auto';
+        }
+        
+        // 8. 自动滚屏
+        if (settings.autoScroll) {
+            applyAutoScroll();
+        } else if (window.simpleAutoScrollInterval) {
+            clearInterval(window.simpleAutoScrollInterval);
+            window.simpleAutoScrollInterval = null;
+        }
+        
+        // 9. 视频增强
+        if (settings.videoEnhance) {
+            applyVideoEnhance();
+        }
+        
+        // 10. 视频倍速
+        if (settings.videoSpeed && settings.videoSpeed !== 1.0) {
+            applyVideoSpeed(settings.videoSpeed);
+        }
+        
+        // 11. 跳过广告
+        if (settings.skipAds) {
+            applySkipAds();
+        }
+        
+        // 12. 禁止自动暂停
+        if (settings.preventPause) {
+            applyPreventPause();
+        }
+        
+        // 13. 清除跟踪参数
+        if (settings.removeTracking) {
+            removeTrackingParams();
+        }
+        
+        // 14. 隐藏Cookie提示
+        if (settings.hideCookie) {
+            applyHideCookie();
+        } else {
+            removeStyle('simple-hide-cookie');
+        }
+        
+        // 15. 禁止媒体权限
+        if (settings.blockMediaPermission) {
+            applyBlockMediaPermission();
+        }
+        
+        // 16. 防指纹追踪
+        if (settings.antiFingerprint) {
+            applyAntiFingerprint();
+        }
+        
+        // 17. 页面净化
+        if (settings.cleanPage) {
+            applyCleanPage();
+        } else {
+            removeStyle('simple-clean-page');
+        }
+        
+        // 18. 屏蔽弹窗
+        if (settings.blockPopups) {
+            applyBlockPopups();
+        }
+        
+        // 19. 禁止自动刷新
+        if (settings.blockRefresh) {
+            applyBlockRefresh();
+        }
+        
+        // 20. 关闭GIF动画
+        if (settings.blockGif) {
+            applyBlockGif();
+        } else {
+            removeStyle('simple-block-gif');
+        }
+        
+        // 21. 切换UA
+        if (settings.userAgent && settings.userAgent !== 'default') {
+            applyUserAgent(settings.userAgent);
+        }
     }
     
     // ==================== 功能实现函数 ====================
@@ -560,27 +593,63 @@
                 // 重新应用所有设置
                 initialize();
                 break;
+            case 'settingsChanged':
+                // 设置变化，重新应用
+                initialize();
+                break;
         }
         return true;
     });
     
-    // 页面加载完成后初始化
+    // 立即初始化（不等待 DOMContentLoaded）
+    initialize();
+    
+    // 页面加载完成后再次初始化（确保所有元素都已加载）
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize);
-    } else {
-        initialize();
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Simple Dark Mode & Reader: DOM 加载完成，重新应用设置');
+            initialize();
+        });
     }
     
     // 监听页面变化（SPA应用）
     let lastUrl = location.href;
+    let lastBodyHash = '';
+    
+    function getBodyHash() {
+        return document.body ? document.body.innerHTML.substring(0, 1000) : '';
+    }
+    
     new MutationObserver(() => {
+        // 检查 URL 变化
         const url = location.href;
         if (url !== lastUrl) {
             lastUrl = url;
             console.log('Simple Dark Mode & Reader: 页面URL变化，重新应用设置');
-            setTimeout(initialize, 500);
+            setTimeout(initialize, 300);
+            return;
         }
-    }).observe(document, { subtree: true, childList: true });
+        
+        // 检查页面内容变化（针对SPA应用的路由切换）
+        const currentBodyHash = getBodyHash();
+        if (currentBodyHash !== lastBodyHash && currentBodyHash.length > 0) {
+            lastBodyHash = currentBodyHash;
+            console.log('Simple Dark Mode & Reader: 页面内容变化，重新应用设置');
+            setTimeout(initialize, 300);
+        }
+    }).observe(document, {
+        subtree: true, 
+        childList: true,
+        characterData: true
+    });
+    
+    // 监听存储变化
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+        if (namespace === 'local') {
+            console.log('Simple Dark Mode & Reader: 设置已更改，重新应用', changes);
+            initialize();
+        }
+    });
     
     console.log('Simple Dark Mode & Reader: Content script 已加载，准备恢复功能状态');
 })();
