@@ -8,16 +8,30 @@ async function isAdGuardInstalled() {
   try {
     // 检查 AdGuard 扩展是否安装
     const extensions = await chrome.management.getAll();
+    console.log('所有已安装的扩展数量:', extensions.length);
+    
+    // 打印所有扩展，以便查看实际安装的 AdGuard 扩展
+    extensions.forEach(ext => {
+      if (ext.name.toLowerCase().includes('adguard')) {
+        console.log('找到 AdGuard 相关扩展:', {
+          name: ext.name,
+          id: ext.id,
+          enabled: ext.enabled,
+          version: ext.version
+        });
+      }
+    });
+    
     const adguardExtension = extensions.find(ext => 
       ext.name.toLowerCase().includes('adguard') && 
       ext.enabled === true
     );
     
     if (adguardExtension) {
-      console.log('找到 AdGuard 扩展:', adguardExtension.name, adguardExtension.id);
+      console.log('找到启用的 AdGuard 扩展:', adguardExtension.name, adguardExtension.id);
       return true;
     }
-    console.log('未找到 AdGuard 扩展');
+    console.log('未找到启用的 AdGuard 扩展');
     return false;
   } catch (error) {
     console.error('检测 AdGuard 安装状态失败:', error);
