@@ -1,18 +1,7 @@
 // 全局变量
 let currentTab;
 
-// 初始化页面
-async function init() {
-    // 获取当前标签页
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    currentTab = tabs[0];
-    
-    // 加载用户设置
-    loadSettings();
-    
-    // 绑定事件监听器
-    bindEventListeners();
-}
+
 
 // 加载用户设置
 function loadSettings() {
@@ -293,3 +282,6 @@ async function init() {
     // 检查 AdGuard 状态
     checkAdGuardStatus();
 }
+
+// 调用初始化函数
+init();
