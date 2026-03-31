@@ -14,9 +14,8 @@
         
         <!-- 深色模式模块 -->
         <section class="section dark-mode-section">
-            <h2 class="section-title">深色模式</h2>
+            <h2 class="section-title">🌙 深色模式</h2>
             
-            <!-- 深色模式开关 -->
             <div class="option">
                 <label for="dark-mode" class="option-label">
                     <span class="option-icon">🌙</span>
@@ -28,11 +27,10 @@
                 </label>
             </div>
             
-            <!-- 深色模式档位选择 -->
             <div class="option dark-mode-level">
                 <label class="option-label">
                     <span class="option-icon">🎨</span>
-                    <span class="option-text">深色模式档位</span>
+                    <span class="option-text">模式档位</span>
                 </label>
                 <select id="dark-mode-level" class="dark-level-select">
                     <option value="standard">标准深色</option>
@@ -41,11 +39,10 @@
                 </select>
             </div>
             
-            <!-- 深色模式增强 -->
             <div class="option">
                 <label for="enhanced-dark" class="option-label">
                     <span class="option-icon">✨</span>
-                    <span class="option-text">深色模式增强</span>
+                    <span class="option-text">深色增强</span>
                 </label>
                 <label class="switch">
                     <input type="checkbox" id="enhanced-dark">
@@ -53,38 +50,42 @@
                 </label>
             </div>
             
-            <!-- 网站白名单 -->
+            <div class="option">
+                <label for="eye-care" class="option-label">
+                    <span class="option-icon">👁️</span>
+                    <span class="option-text">护眼黄底</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="eye-care">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
             <div class="option">
                 <label for="add-whitelist" class="option-label">
                     <span class="option-icon">📋</span>
                     <span class="option-text">添加到白名单</span>
                 </label>
-                <button id="add-whitelist" class="action-button">
-                    添加
-                </button>
+                <button id="add-whitelist" class="action-button">添加</button>
             </div>
             
-            <!-- 一键还原 -->
             <div class="option">
                 <label for="reset-styles" class="option-label">
                     <span class="option-icon">↺</span>
                     <span class="option-text">一键还原</span>
                 </label>
-                <button id="reset-styles" class="action-button">
-                    还原
-                </button>
+                <button id="reset-styles" class="action-button">还原</button>
             </div>
         </section>
         
-        <!-- 阅读增强模块 -->
+        <!-- 阅读净化模块 -->
         <section class="section reading-section">
-            <h2 class="section-title">阅读增强</h2>
+            <h2 class="section-title">📖 阅读净化</h2>
             
-            <!-- 阅读模式开关 -->
             <div class="option">
                 <label for="reader-mode" class="option-label">
                     <span class="option-icon">📖</span>
-                    <span class="option-text">阅读模式</span>
+                    <span class="option-text">专注阅读</span>
                 </label>
                 <label class="switch">
                     <input type="checkbox" id="reader-mode">
@@ -92,20 +93,56 @@
                 </label>
             </div>
             
-            <!-- 字体大小调节 -->
+            <div class="option">
+                <label for="auto-scroll" class="option-label">
+                    <span class="option-icon">📜</span>
+                    <span class="option-text">自动滚屏</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="auto-scroll">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <div class="option">
+                <label for="smooth-scroll" class="option-label">
+                    <span class="option-icon">🔄</span>
+                    <span class="option-text">平滑滚动</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="smooth-scroll">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
             <div class="option font-size-option">
                 <label for="font-size" class="option-label">
                     <span class="option-icon">📝</span>
-                    <span class="option-text">字体大小: <span id="font-size-value">16</span>px</span>
+                    <span class="option-text">字体: <span id="font-size-value">16</span>px</span>
                 </label>
                 <input type="range" id="font-size" min="12" max="24" value="16">
             </div>
             
-            <!-- 强制复制 -->
+            <div class="option">
+                <label for="line-height" class="option-label">
+                    <span class="option-icon">↕️</span>
+                    <span class="option-text">行距: <span id="line-height-value">1.6</span></span>
+                </label>
+                <input type="range" id="line-height" min="1.2" max="2.0" step="0.1" value="1.6">
+            </div>
+            
+            <div class="option">
+                <label for="word-spacing" class="option-label">
+                    <span class="option-icon">↔️</span>
+                    <span class="option-text">间距: <span id="word-spacing-value">0</span>px</span>
+                </label>
+                <input type="range" id="word-spacing" min="0" max="5" step="0.5" value="0">
+            </div>
+            
             <div class="option">
                 <label for="force-copy" class="option-label">
                     <span class="option-icon">📋</span>
-                    <span class="option-text">强制复制</span>
+                    <span class="option-text">解除复制限制</span>
                 </label>
                 <label class="switch">
                     <input type="checkbox" id="force-copy">
@@ -113,27 +150,92 @@
                 </label>
             </div>
             
-            <!-- 滚动平滑 -->
             <div class="option">
-                <label for="smooth-scroll" class="option-label">
-                    <span class="option-icon">📜</span>
-                    <span class="option-text">滚动平滑</span>
+                <label for="copy-content" class="option-label">
+                    <span class="option-icon">📄</span>
+                    <span class="option-text">复制正文</span>
                 </label>
-                <label class="switch">
-                    <input type="checkbox" id="smooth-scroll">
-                    <span class="slider round"></span>
+                <button id="copy-content" class="action-button">复制</button>
+            </div>
+            
+            <div class="option">
+                <label for="copy-links" class="option-label">
+                    <span class="option-icon">🔗</span>
+                    <span class="option-text">复制所有链接</span>
                 </label>
+                <button id="copy-links" class="action-button">复制</button>
             </div>
         </section>
         
-        <!-- 隐私净化模块 -->
-        <section class="section privacy-section">
-            <h2 class="section-title">隐私净化</h2>
+        <!-- 视频工具模块 -->
+        <section class="section video-section">
+            <h2 class="section-title">🎬 视频工具</h2>
             
-            <!-- 清除跟踪参数 -->
+            <div class="option">
+                <label for="video-enhance" class="option-label">
+                    <span class="option-icon">🎬</span>
+                    <span class="option-text">视频增强</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="video-enhance">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <div class="option">
+                <label for="video-speed" class="option-label">
+                    <span class="option-icon">⚡</span>
+                    <span class="option-text">倍速: <span id="video-speed-value">1.0</span>x</span>
+                </label>
+                <input type="range" id="video-speed" min="0.25" max="4.0" step="0.25" value="1.0">
+            </div>
+            
+            <div class="option">
+                <label for="skip-ads" class="option-label">
+                    <span class="option-icon">⏭️</span>
+                    <span class="option-text">跳过片头广告</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="skip-ads">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <div class="option">
+                <label for="prevent-pause" class="option-label">
+                    <span class="option-icon">▶️</span>
+                    <span class="option-text">禁止自动暂停</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="prevent-pause">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <div class="option">
+                <label for="pip-mode" class="option-label">
+                    <span class="option-icon">🖼️</span>
+                    <span class="option-text">画中画</span>
+                </label>
+                <button id="pip-mode" class="action-button">开启</button>
+            </div>
+            
+            <div class="option">
+                <label for="web-fullscreen" class="option-label">
+                    <span class="option-icon">🔲</span>
+                    <span class="option-text">网页全屏</span>
+                </label>
+                <button id="web-fullscreen" class="action-button">全屏</button>
+            </div>
+        </section>
+        
+        <!-- 隐私安全模块 -->
+        <section class="section privacy-section">
+            <h2 class="section-title">🔒 隐私安全</h2>
+            
             <div class="option">
                 <label for="remove-tracking" class="option-label">
-                    <span class="option-icon">🔒</span>
+                    <span class="option-icon">🛡️</span>
                     <span class="option-text">清除跟踪参数</span>
                 </label>
                 <label class="switch">
@@ -142,7 +244,6 @@
                 </label>
             </div>
             
-            <!-- 隐藏Cookie提示 -->
             <div class="option">
                 <label for="hide-cookie" class="option-label">
                     <span class="option-icon">🍪</span>
@@ -154,7 +255,6 @@
                 </label>
             </div>
             
-            <!-- 禁止媒体权限 -->
             <div class="option">
                 <label for="block-media-permission" class="option-label">
                     <span class="option-icon">🎥</span>
@@ -166,51 +266,112 @@
                 </label>
             </div>
             
-            <!-- 智能去水印 -->
             <div class="option">
-                <label for="remove-watermark" class="option-label">
-                    <span class="option-icon">🖼️</span>
-                    <span class="option-text">智能去水印</span>
+                <label for="anti-fingerprint" class="option-label">
+                    <span class="option-icon">🕵️</span>
+                    <span class="option-text">防指纹追踪</span>
                 </label>
                 <label class="switch">
-                    <input type="checkbox" id="remove-watermark">
+                    <input type="checkbox" id="anti-fingerprint">
                     <span class="slider round"></span>
                 </label>
             </div>
+        </section>
+        
+        <!-- 实用工具模块 -->
+        <section class="section tools-section">
+            <h2 class="section-title">🛠️ 实用工具</h2>
             
-            <!-- 网页净化 -->
             <div class="option">
                 <label for="clean-page" class="option-label">
                     <span class="option-icon">🧹</span>
-                    <span class="option-text">网页净化</span>
+                    <span class="option-text">页面净化</span>
                 </label>
                 <label class="switch">
                     <input type="checkbox" id="clean-page">
                     <span class="slider round"></span>
                 </label>
             </div>
-        </section>
-        
-        <!-- 视频工具模块 -->
-        <section class="section video-section">
-            <h2 class="section-title">视频工具</h2>
             
-            <!-- 视频增强 -->
             <div class="option">
-                <label for="video-enhance" class="option-label">
-                    <span class="option-icon">🎬</span>
-                    <span class="option-text">视频增强</span>
+                <label for="block-popups" class="option-label">
+                    <span class="option-icon">🚫</span>
+                    <span class="option-text">屏蔽弹窗</span>
                 </label>
                 <label class="switch">
-                    <input type="checkbox" id="video-enhance">
+                    <input type="checkbox" id="block-popups">
                     <span class="slider round"></span>
                 </label>
+            </div>
+            
+            <div class="option">
+                <label for="block-refresh" class="option-label">
+                    <span class="option-icon">🔄</span>
+                    <span class="option-text">禁止自动刷新</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="block-refresh">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <div class="option">
+                <label for="block-gif" class="option-label">
+                    <span class="option-icon">🎭</span>
+                    <span class="option-text">关闭GIF动画</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="block-gif">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <div class="option">
+                <label for="pdf-export" class="option-label">
+                    <span class="option-icon">📄</span>
+                    <span class="option-text">导出PDF</span>
+                </label>
+                <button id="pdf-export" class="action-button">导出</button>
+            </div>
+            
+            <div class="option">
+                <label for="full-screenshot" class="option-label">
+                    <span class="option-icon">📷</span>
+                    <span class="option-text">长截图</span>
+                </label>
+                <button id="full-screenshot" class="action-button">截图</button>
+            </div>
+            
+            <div class="option">
+                <label for="auto-refresh" class="option-label">
+                    <span class="option-icon">⏰</span>
+                    <span class="option-text">定时刷新</span>
+                </label>
+                <select id="auto-refresh" class="dark-level-select">
+                    <option value="0">关闭</option>
+                    <option value="30">30秒</option>
+                    <option value="60">1分钟</option>
+                    <option value="300">5分钟</option>
+                    <option value="600">10分钟</option>
+                </select>
+            </div>
+            
+            <div class="option">
+                <label for="user-agent" class="option-label">
+                    <span class="option-icon">📱</span>
+                    <span class="option-text">切换UA</span>
+                </label>
+                <select id="user-agent" class="dark-level-select">
+                    <option value="default">默认</option>
+                    <option value="mobile">手机</option>
+                    <option value="desktop">电脑</option>
+                </select>
             </div>
         </section>
         
         <!-- AdGuard 集成区 -->
         <section class="section adguard-section">
-            <h2 class="section-title">AdGuard 集成（未实现）</h2>
+            <h2 class="section-title">🛡️ AdGuard 集成（未实现）</h2>
             
             <div class="adguard-content">
                 <div id="adguard-status" class="adguard-status">

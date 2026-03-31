@@ -1,204 +1,307 @@
 let currentTab;
+let autoScrollInterval = null;
+let refreshInterval = null;
 
 // 加载用户设置
 function loadSettings() {
-    // 获取当前标签页URL，用于加载网站特定设置
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const currentTab = tabs[0];
         const url = currentTab?.url || '';
         const domain = new URL(url).hostname || '';
         
-        chrome.storage.local.get(['darkMode', 'readerMode', 'fontSize', 'removeWatermark', 'cleanPage', 'forceCopy', 'videoEnhance', 'smoothScroll', 'enhancedDark', 'darkModeLevel', 'whitelist', 'siteSettings', 'removeTracking', 'hideCookie', 'blockMediaPermission'], (result) => {
-            // 设置深色模式开关
-            if (result.siteSettings?.[domain]?.darkMode !== undefined) {
-                document.getElementById('dark-mode').checked = result.siteSettings[domain].darkMode;
-            } else if (result.darkMode !== undefined) {
-                document.getElementById('dark-mode').checked = result.darkMode;
-            }
+        const settings = [
+            'darkMode', 'readerMode', 'fontSize', 'lineHeight', 'wordSpacing',
+            'removeWatermark', 'cleanPage', 'forceCopy', 'videoEnhance', 'smoothScroll',
+            'enhancedDark', 'darkModeLevel', 'whitelist', 'siteSettings',
+            'removeTracking', 'hideCookie', 'blockMediaPermission', 'antiFingerprint',
+            'eyeCare', 'autoScroll', 'videoSpeed', 'skipAds', 'preventPause',
+            'blockPopups', 'blockRefresh', 'blockGif', 'autoRefresh', 'userAgent'
+        ];
+        
+        chrome.storage.local.get(settings, (result) => {
+            // 深色模式
+            const darkMode = result.siteSettings?.[domain]?.darkMode ?? result.darkMode ?? false;
+            document.getElementById('dark-mode').checked = darkMode;
             
-            // 设置阅读模式开关
-            if (result.readerMode !== undefined) {
-                document.getElementById('reader-mode').checked = result.readerMode;
-            }
+            // 深色模式档位
+            const darkModeLevel = result.siteSettings?.[domain]?.darkModeLevel ?? result.darkModeLevel ?? 'standard';
+            document.getElementById('dark-mode-level').value = darkModeLevel;
             
-            // 设置字体大小滑块
-            if (result.fontSize !== undefined) {
-                document.getElementById('font-size').value = result.fontSize;
-                document.getElementById('font-size-value').textContent = result.fontSize;
-            }
+            // 深色增强
+            document.getElementById('enhanced-dark').checked = result.enhancedDark ?? false;
             
-            // 设置智能去水印开关
-            if (result.removeWatermark !== undefined) {
-                document.getElementById('remove-watermark').checked = result.removeWatermark;
-            }
+            // 护眼黄底
+            document.getElementById('eye-care').checked = result.eyeCare ?? false;
             
-            // 设置网页净化开关
-            if (result.cleanPage !== undefined) {
-                document.getElementById('clean-page').checked = result.cleanPage;
-            }
+            // 阅读模式
+            document.getElementById('reader-mode').checked = result.readerMode ?? false;
             
-            // 设置强制复制开关
-            if (result.forceCopy !== undefined) {
-                document.getElementById('force-copy').checked = result.forceCopy;
-            }
+            // 自动滚屏
+            document.getElementById('auto-scroll').checked = result.autoScroll ?? false;
             
-            // 设置视频增强开关
-            if (result.videoEnhance !== undefined) {
-                document.getElementById('video-enhance').checked = result.videoEnhance;
-            }
+            // 平滑滚动
+            document.getElementById('smooth-scroll').checked = result.smoothScroll ?? false;
             
-            // 设置滚动平滑开关
-            if (result.smoothScroll !== undefined) {
-                document.getElementById('smooth-scroll').checked = result.smoothScroll;
-            }
+            // 字体大小
+            const fontSize = result.fontSize ?? 16;
+            document.getElementById('font-size').value = fontSize;
+            document.getElementById('font-size-value').textContent = fontSize;
             
-            // 设置深色模式增强开关
-            if (result.enhancedDark !== undefined) {
-                document.getElementById('enhanced-dark').checked = result.enhancedDark;
-            }
+            // 行距
+            const lineHeight = result.lineHeight ?? 1.6;
+            document.getElementById('line-height').value = lineHeight;
+            document.getElementById('line-height-value').textContent = lineHeight;
             
-            // 设置深色模式档位
-            if (result.siteSettings?.[domain]?.darkModeLevel !== undefined) {
-                document.getElementById('dark-mode-level').value = result.siteSettings[domain].darkModeLevel;
-            } else if (result.darkModeLevel !== undefined) {
-                document.getElementById('dark-mode-level').value = result.darkModeLevel;
-            }
+            // 间距
+            const wordSpacing = result.wordSpacing ?? 0;
+            document.getElementById('word-spacing').value = wordSpacing;
+            document.getElementById('word-spacing-value').textContent = wordSpacing;
             
-            // 设置清除跟踪参数开关
-            if (result.removeTracking !== undefined) {
-                document.getElementById('remove-tracking').checked = result.removeTracking;
-            }
+            // 强制复制
+            document.getElementById('force-copy').checked = result.forceCopy ?? false;
             
-            // 设置隐藏Cookie提示开关
-            if (result.hideCookie !== undefined) {
-                document.getElementById('hide-cookie').checked = result.hideCookie;
-            }
+            // 视频增强
+            document.getElementById('video-enhance').checked = result.videoEnhance ?? false;
             
-            // 设置禁止媒体权限开关
-            if (result.blockMediaPermission !== undefined) {
-                document.getElementById('block-media-permission').checked = result.blockMediaPermission;
-            }
+            // 视频倍速
+            const videoSpeed = result.videoSpeed ?? 1.0;
+            document.getElementById('video-speed').value = videoSpeed;
+            document.getElementById('video-speed-value').textContent = videoSpeed.toFixed(2);
+            
+            // 跳过广告
+            document.getElementById('skip-ads').checked = result.skipAds ?? false;
+            
+            // 禁止自动暂停
+            document.getElementById('prevent-pause').checked = result.preventPause ?? false;
+            
+            // 清除跟踪参数
+            document.getElementById('remove-tracking').checked = result.removeTracking ?? false;
+            
+            // 隐藏Cookie提示
+            document.getElementById('hide-cookie').checked = result.hideCookie ?? false;
+            
+            // 禁止媒体权限
+            document.getElementById('block-media-permission').checked = result.blockMediaPermission ?? false;
+            
+            // 防指纹追踪
+            document.getElementById('anti-fingerprint').checked = result.antiFingerprint ?? false;
+            
+            // 页面净化
+            document.getElementById('clean-page').checked = result.cleanPage ?? false;
+            
+            // 屏蔽弹窗
+            document.getElementById('block-popups').checked = result.blockPopups ?? false;
+            
+            // 禁止自动刷新
+            document.getElementById('block-refresh').checked = result.blockRefresh ?? false;
+            
+            // 关闭GIF动画
+            document.getElementById('block-gif').checked = result.blockGif ?? false;
+            
+            // 定时刷新
+            const autoRefresh = result.autoRefresh ?? 0;
+            document.getElementById('auto-refresh').value = autoRefresh.toString();
+            
+            // 切换UA
+            document.getElementById('user-agent').value = result.userAgent ?? 'default';
         });
     });
 }
 
 // 绑定事件监听器
 function bindEventListeners() {
-    // 深色模式开关
+    // 深色模式
     document.getElementById('dark-mode').addEventListener('change', (e) => {
         const enabled = e.target.checked;
         saveSetting('darkMode', enabled);
         toggleDarkMode(enabled);
     });
     
-    // 阅读模式开关
-    document.getElementById('reader-mode').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('readerMode', enabled);
-        toggleReaderMode(enabled);
+    // 深色模式档位
+    document.getElementById('dark-mode-level').addEventListener('change', (e) => {
+        saveSiteSetting('darkModeLevel', e.target.value);
+        updateDarkMode();
     });
     
-    // 字体大小滑块
-    document.getElementById('font-size').addEventListener('input', (e) => {
-        const fontSize = e.target.value;
-        document.getElementById('font-size-value').textContent = fontSize;
-        saveSetting('fontSize', fontSize);
-        setFontSize(fontSize);
-    });
-    
-    // 智能去水印开关
-    document.getElementById('remove-watermark').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('removeWatermark', enabled);
-        toggleRemoveWatermark(enabled);
-    });
-    
-    // 网页净化开关
-    document.getElementById('clean-page').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('cleanPage', enabled);
-        toggleCleanPage(enabled);
-    });
-    
-    // 强制复制开关
-    document.getElementById('force-copy').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('forceCopy', enabled);
-        toggleForceCopy(enabled);
-    });
-    
-    // 视频增强开关
-    document.getElementById('video-enhance').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('videoEnhance', enabled);
-        toggleVideoEnhance(enabled);
-    });
-    
-    // 滚动平滑开关
-    document.getElementById('smooth-scroll').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('smoothScroll', enabled);
-        toggleSmoothScroll(enabled);
-    });
-    
-    // 深色模式增强开关
+    // 深色增强
     document.getElementById('enhanced-dark').addEventListener('change', (e) => {
         const enabled = e.target.checked;
         saveSetting('enhancedDark', enabled);
-        
-        // 当打开「深色模式增强」时，自动开启「深色模式」主开关
-        if (enabled) {
-            const darkModeSwitch = document.getElementById('dark-mode');
-            if (!darkModeSwitch.checked) {
-                darkModeSwitch.checked = true;
-                saveSetting('darkMode', true);
-                toggleDarkMode(true);
-            }
+        if (enabled && !document.getElementById('dark-mode').checked) {
+            document.getElementById('dark-mode').checked = true;
+            saveSetting('darkMode', true);
+            toggleDarkMode(true);
         }
-        
         toggleEnhancedDark(enabled);
     });
     
-    // 深色模式档位选择
-    document.getElementById('dark-mode-level').addEventListener('change', (e) => {
-        const level = e.target.value;
-        saveSiteSetting('darkModeLevel', level);
-        updateDarkModeLevel(level);
+    // 护眼黄底
+    document.getElementById('eye-care').addEventListener('change', (e) => {
+        saveSetting('eyeCare', e.target.checked);
+        toggleEyeCare(e.target.checked);
     });
     
-    // 添加到白名单按钮
-    document.getElementById('add-whitelist').addEventListener('click', () => {
-        addToWhitelist();
+    // 添加到白名单
+    document.getElementById('add-whitelist').addEventListener('click', addToWhitelist);
+    
+    // 一键还原
+    document.getElementById('reset-styles').addEventListener('click', resetStyles);
+    
+    // 阅读模式
+    document.getElementById('reader-mode').addEventListener('change', (e) => {
+        saveSetting('readerMode', e.target.checked);
+        toggleReaderMode(e.target.checked);
     });
     
-    // 一键还原按钮
-    document.getElementById('reset-styles').addEventListener('click', () => {
-        resetStyles();
+    // 自动滚屏
+    document.getElementById('auto-scroll').addEventListener('change', (e) => {
+        saveSetting('autoScroll', e.target.checked);
+        toggleAutoScroll(e.target.checked);
     });
     
-    // 清除跟踪参数开关
+    // 平滑滚动
+    document.getElementById('smooth-scroll').addEventListener('change', (e) => {
+        saveSetting('smoothScroll', e.target.checked);
+        toggleSmoothScroll(e.target.checked);
+    });
+    
+    // 字体大小
+    document.getElementById('font-size').addEventListener('input', (e) => {
+        const value = e.target.value;
+        document.getElementById('font-size-value').textContent = value;
+        saveSetting('fontSize', parseInt(value));
+        updateTextStyle();
+    });
+    
+    // 行距
+    document.getElementById('line-height').addEventListener('input', (e) => {
+        const value = e.target.value;
+        document.getElementById('line-height-value').textContent = value;
+        saveSetting('lineHeight', parseFloat(value));
+        updateTextStyle();
+    });
+    
+    // 间距
+    document.getElementById('word-spacing').addEventListener('input', (e) => {
+        const value = e.target.value;
+        document.getElementById('word-spacing-value').textContent = value;
+        saveSetting('wordSpacing', parseFloat(value));
+        updateTextStyle();
+    });
+    
+    // 强制复制
+    document.getElementById('force-copy').addEventListener('change', (e) => {
+        saveSetting('forceCopy', e.target.checked);
+        toggleForceCopy(e.target.checked);
+    });
+    
+    // 复制正文
+    document.getElementById('copy-content').addEventListener('click', copyMainContent);
+    
+    // 复制所有链接
+    document.getElementById('copy-links').addEventListener('click', copyAllLinks);
+    
+    // 视频增强
+    document.getElementById('video-enhance').addEventListener('change', (e) => {
+        saveSetting('videoEnhance', e.target.checked);
+        toggleVideoEnhance(e.target.checked);
+    });
+    
+    // 视频倍速
+    document.getElementById('video-speed').addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        document.getElementById('video-speed-value').textContent = value.toFixed(2);
+        saveSetting('videoSpeed', value);
+        setVideoSpeed(value);
+    });
+    
+    // 跳过广告
+    document.getElementById('skip-ads').addEventListener('change', (e) => {
+        saveSetting('skipAds', e.target.checked);
+        toggleSkipAds(e.target.checked);
+    });
+    
+    // 禁止自动暂停
+    document.getElementById('prevent-pause').addEventListener('change', (e) => {
+        saveSetting('preventPause', e.target.checked);
+        togglePreventPause(e.target.checked);
+    });
+    
+    // 画中画
+    document.getElementById('pip-mode').addEventListener('click', togglePictureInPicture);
+    
+    // 网页全屏
+    document.getElementById('web-fullscreen').addEventListener('click', toggleWebFullscreen);
+    
+    // 清除跟踪参数
     document.getElementById('remove-tracking').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('removeTracking', enabled);
-        toggleRemoveTracking(enabled);
+        saveSetting('removeTracking', e.target.checked);
+        toggleRemoveTracking(e.target.checked);
     });
     
-    // 隐藏Cookie提示开关
+    // 隐藏Cookie提示
     document.getElementById('hide-cookie').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('hideCookie', enabled);
-        toggleHideCookie(enabled);
+        saveSetting('hideCookie', e.target.checked);
+        toggleHideCookie(e.target.checked);
     });
     
-    // 禁止媒体权限开关
+    // 禁止媒体权限
     document.getElementById('block-media-permission').addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        saveSetting('blockMediaPermission', enabled);
-        toggleBlockMediaPermission(enabled);
+        saveSetting('blockMediaPermission', e.target.checked);
+        toggleBlockMediaPermission(e.target.checked);
+    });
+    
+    // 防指纹追踪
+    document.getElementById('anti-fingerprint').addEventListener('change', (e) => {
+        saveSetting('antiFingerprint', e.target.checked);
+        toggleAntiFingerprint(e.target.checked);
+    });
+    
+    // 页面净化
+    document.getElementById('clean-page').addEventListener('change', (e) => {
+        saveSetting('cleanPage', e.target.checked);
+        toggleCleanPage(e.target.checked);
+    });
+    
+    // 屏蔽弹窗
+    document.getElementById('block-popups').addEventListener('change', (e) => {
+        saveSetting('blockPopups', e.target.checked);
+        toggleBlockPopups(e.target.checked);
+    });
+    
+    // 禁止自动刷新
+    document.getElementById('block-refresh').addEventListener('change', (e) => {
+        saveSetting('blockRefresh', e.target.checked);
+        toggleBlockRefresh(e.target.checked);
+    });
+    
+    // 关闭GIF动画
+    document.getElementById('block-gif').addEventListener('change', (e) => {
+        saveSetting('blockGif', e.target.checked);
+        toggleBlockGif(e.target.checked);
+    });
+    
+    // 导出PDF
+    document.getElementById('pdf-export').addEventListener('click', exportToPDF);
+    
+    // 长截图
+    document.getElementById('full-screenshot').addEventListener('click', takeFullScreenshot);
+    
+    // 定时刷新
+    document.getElementById('auto-refresh').addEventListener('change', (e) => {
+        const value = parseInt(e.target.value);
+        saveSetting('autoRefresh', value);
+        setupAutoRefresh(value);
+    });
+    
+    // 切换UA
+    document.getElementById('user-agent').addEventListener('change', (e) => {
+        saveSetting('userAgent', e.target.value);
+        toggleUserAgent(e.target.value);
     });
 }
 
-// 保存设置到存储
+// 保存设置
 function saveSetting(key, value) {
     chrome.storage.local.set({ [key]: value });
 }
@@ -206,16 +309,13 @@ function saveSetting(key, value) {
 // 保存网站特定设置
 function saveSiteSetting(key, value) {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const currentTab = tabs[0];
-        const url = currentTab?.url || '';
+        const url = tabs[0]?.url || '';
         const domain = new URL(url).hostname || '';
         
         if (domain) {
             chrome.storage.local.get('siteSettings', (result) => {
                 const siteSettings = result.siteSettings || {};
-                if (!siteSettings[domain]) {
-                    siteSettings[domain] = {};
-                }
+                if (!siteSettings[domain]) siteSettings[domain] = {};
                 siteSettings[domain][key] = value;
                 chrome.storage.local.set({ siteSettings });
             });
@@ -223,11 +323,10 @@ function saveSiteSetting(key, value) {
     });
 }
 
-// 添加网站到白名单
+// 添加到白名单
 function addToWhitelist() {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const currentTab = tabs[0];
-        const url = currentTab?.url || '';
+        const url = tabs[0]?.url || '';
         const domain = new URL(url).hostname || '';
         
         if (domain) {
@@ -237,7 +336,6 @@ function addToWhitelist() {
                     whitelist.push(domain);
                     chrome.storage.local.set({ whitelist });
                     alert(`已将 ${domain} 添加到白名单`);
-                    // 关闭当前深色模式
                     document.getElementById('dark-mode').checked = false;
                     toggleDarkMode(false);
                 } else {
@@ -248,645 +346,337 @@ function addToWhitelist() {
     });
 }
 
-// 一键还原样式
+// 一键还原
 function resetStyles() {
     if (!currentTab) return;
     
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
         func: () => {
-            // 移除所有注入的样式
-            const styles = document.querySelectorAll('[id^="simple-"]');
-            styles.forEach(style => style.remove());
-            
-            // 重新加载页面以确保完全还原
+            document.querySelectorAll('[id^="simple-"]').forEach(el => el.remove());
             location.reload();
         }
     }, () => {
-        // 页面重新加载后，检测网站原生主题并同步开关状态
-        setTimeout(() => {
-            detectNativeTheme();
-        }, 1000); // 等待页面加载完成
+        setTimeout(detectNativeTheme, 1000);
     });
 }
 
-// 更新深色模式档位
-function updateDarkModeLevel(level) {
+// 复制正文
+function copyMainContent() {
     if (!currentTab) return;
     
-    // 先检查深色模式是否开启
-    chrome.storage.local.get('darkMode', (result) => {
-        const darkModeEnabled = result.darkMode || false;
-        if (darkModeEnabled) {
-            toggleDarkMode(true);
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: () => {
+            const article = document.querySelector('article, .article, .content, .post, .entry-content, main');
+            const content = article ? article.innerText : document.body.innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('正文已复制到剪贴板！');
+            });
         }
     });
 }
 
-// 切换深色模式
+// 复制所有链接
+function copyAllLinks() {
+    if (!currentTab) return;
+    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: () => {
+            const links = Array.from(document.querySelectorAll('a[href]'))
+                .map(a => a.href)
+                .filter((href, index, self) => self.indexOf(href) === index);
+            navigator.clipboard.writeText(links.join('\n')).then(() => {
+                alert(`已复制 ${links.length} 个链接到剪贴板！`);
+            });
+        }
+    });
+}
+
+// 画中画
+function togglePictureInPicture() {
+    if (!currentTab) return;
+    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: () => {
+            const video = document.querySelector('video');
+            if (video && document.pictureInPictureEnabled) {
+                if (document.pictureInPictureElement) {
+                    document.exitPictureInPicture();
+                } else {
+                    video.requestPictureInPicture();
+                }
+            }
+        }
+    });
+}
+
+// 网页全屏
+function toggleWebFullscreen() {
+    if (!currentTab) return;
+    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: () => {
+            const video = document.querySelector('video');
+            if (video) {
+                if (video.webkitEnterFullscreen) {
+                    video.webkitEnterFullscreen();
+                } else if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                }
+            }
+        }
+    });
+}
+
+// 导出PDF
+function exportToPDF() {
+    if (!currentTab) return;
+    chrome.tabs.sendMessage(currentTab.id, { action: 'exportPDF' });
+}
+
+// 长截图
+function takeFullScreenshot() {
+    if (!currentTab) return;
+    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: () => {
+            alert('长截图功能需要额外权限，建议使用浏览器自带截图工具或第三方扩展。');
+        }
+    });
+}
+
+// 检测原生主题
+function detectNativeTheme() {
+    if (!currentTab) return;
+    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: () => {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const hasNativeDark = document.documentElement.classList.contains('dark') || 
+                               document.body.classList.contains('dark') ||
+                               getComputedStyle(document.body).backgroundColor.includes('18, 18, 18');
+            return { prefersDark, hasNativeDark };
+        }
+    }, (results) => {
+        if (results?.[0]?.result) {
+            const { prefersDark, hasNativeDark } = results[0].result;
+            const isDark = prefersDark || hasNativeDark;
+            document.getElementById('dark-mode').checked = isDark;
+            saveSiteSetting('darkMode', isDark);
+        }
+    });
+}
+
+// 检查AdGuard状态
+function checkAdGuardStatus() {
+    const adguardStatus = document.getElementById('adguard-status');
+    const adguardButton = document.getElementById('open-adguard-assistant');
+    
+    adguardStatus.className = 'adguard-status adguard-status-not-installed';
+    adguardStatus.innerHTML = '<span class="status-label">状态:</span><span class="status-text">未安装</span>';
+    adguardButton.disabled = true;
+}
+
+// 初始化
+async function init() {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    currentTab = tabs[0];
+    
+    loadSettings();
+    bindEventListeners();
+    checkAdGuardStatus();
+    detectNativeTheme();
+}
+
+init();
+
+// ==================== 功能实现函数 ====================
+
+// 深色模式
 function toggleDarkMode(enabled) {
     if (!currentTab) return;
     
-    // 获取当前网站域名，检查是否在白名单中
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const currentTab = tabs[0];
-        const url = currentTab?.url || '';
+        const url = tabs[0]?.url || '';
         const domain = new URL(url).hostname || '';
         
-        chrome.storage.local.get(['whitelist', 'darkModeLevel', 'siteSettings'], (result) => {
-            const whitelist = result.whitelist || [];
+        chrome.storage.local.get(['whitelist', 'darkModeLevel'], (result) => {
+            if (result.whitelist?.includes(domain)) return;
             
-            // 检查是否在白名单中
-            if (whitelist.includes(domain)) {
-                console.log('网站在白名单中，跳过深色模式');
-                return;
-            }
+            const level = result.darkModeLevel || 'standard';
+            saveSiteSetting('darkMode', enabled);
             
-            // 获取深色模式档位
-            let darkModeLevel = result.darkModeLevel || 'standard';
-            if (result.siteSettings?.[domain]?.darkModeLevel) {
-                darkModeLevel = result.siteSettings[domain].darkModeLevel;
-            }
-            
-            // 保存网站特定的深色模式状态
-            if (domain) {
-                chrome.storage.local.get('siteSettings', (result) => {
-                    const siteSettings = result.siteSettings || {};
-                    if (!siteSettings[domain]) {
-                        siteSettings[domain] = {};
-                    }
-                    siteSettings[domain].darkMode = enabled;
-                    chrome.storage.local.set({ siteSettings });
-                });
+            let colors;
+            switch (level) {
+                case 'pure-black':
+                    colors = { bg: '#000000', surface: '#121212', text: '#e0e0e0', border: '#333' };
+                    break;
+                case 'soft':
+                    colors = { bg: '#2d2d2d', surface: '#3d3d3d', text: '#f5f5f5', border: '#4d4d4d' };
+                    break;
+                default:
+                    colors = { bg: '#1a1a1a', surface: '#2d2d2d', text: '#e0e0e0', border: '#333' };
             }
             
             chrome.scripting.executeScript({
                 target: { tabId: currentTab.id },
-                func: (enabled, darkModeLevel) => {
+                func: (enabled, colors) => {
+                    let style = document.getElementById('simple-dark-mode');
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'simple-dark-mode';
+                        document.head.appendChild(style);
+                    }
+                    
                     if (enabled) {
-                        // 强制网页变成深色
-                        // 根据档位选择颜色方案
-                        let colorScheme;
-                        switch (darkModeLevel) {
-                            case 'pure-black':
-                                colorScheme = {
-                                    background: '#000000',
-                                    surface: '#121212',
-                                    primary: '#2196F3',
-                                    text: '#e0e0e0',
-                                    textSecondary: '#9e9e9e',
-                                    border: '#333333'
-                                };
-                                break;
-                            case 'soft':
-                                colorScheme = {
-                                    background: '#2d2d2d',
-                                    surface: '#3d3d3d',
-                                    primary: '#64b5f6',
-                                    text: '#f5f5f5',
-                                    textSecondary: '#bdbdbd',
-                                    border: '#4d4d4d'
-                                };
-                                break;
-                            default: // standard
-                                colorScheme = {
-                                    background: '#1a1a1a',
-                                    surface: '#2d2d2d',
-                                    primary: '#2196F3',
-                                    text: '#e0e0e0',
-                                    textSecondary: '#9e9e9e',
-                                    border: '#333333'
-                                };
-                        }
-                        
-                        // 添加深色模式样式
-                        let style = document.getElementById('simple-dark-mode-style');
-                        if (!style) {
-                            style = document.createElement('style');
-                            style.id = 'simple-dark-mode-style';
-                            document.head.appendChild(style);
-                        }
-                        
-                        // 智能元素级适配样式
                         style.textContent = `
-                            /* 基础样式 */
-                            :root {
-                                --dark-bg: ${colorScheme.background} !important;
-                                --dark-surface: ${colorScheme.surface} !important;
-                                --dark-primary: ${colorScheme.primary} !important;
-                                --dark-text: ${colorScheme.text} !important;
-                                --dark-text-secondary: ${colorScheme.textSecondary} !important;
-                                --dark-border: ${colorScheme.border} !important;
-                            }
-                            
-                            /* 全局样式 */
-                            html, body {
-                                background-color: var(--dark-bg) !important;
-                                color: var(--dark-text) !important;
-                                transition: all 0.3s ease !important;
-                            }
-                            
-                            /* 所有元素的基础适配 */
-                            * {
-                                color: var(--dark-text) !important;
-                                border-color: var(--dark-border) !important;
-                                transition: all 0.3s ease !important;
-                            }
-                            
-                            /* 背景色适配 */
-                            body, div, section, article, header, footer, nav, aside,
-                            .container, .content, .wrapper, .page, .main,
-                            .card, .panel, .box, .section,
-                            .bg-white, .bg-light, .bg-gray-100, .bg-gray-200, .bg-gray-300,
-                            .white, .light, .gray, .bg-default {
-                                background-color: var(--dark-surface) !important;
-                            }
-                            
-                            /* 文字颜色适配 */
-                            h1, h2, h3, h4, h5, h6, p, span, div, li, a, label, button {
-                                color: var(--dark-text) !important;
-                            }
-                            
-                            /* 链接样式 */
-                            a {
-                                color: var(--dark-primary) !important;
-                            }
-                            
-                            a:hover {
-                                color: ${colorScheme.primary}cc !important;
-                            }
-                            
-                            /* 输入框和表单元素 */
-                            input, textarea, select, button, .button {
-                                background-color: var(--dark-surface) !important;
-                                color: var(--dark-text) !important;
-                                border-color: var(--dark-border) !important;
-                            }
-                            
-                            input:focus, textarea:focus, select:focus {
-                                border-color: var(--dark-primary) !important;
-                                outline-color: var(--dark-primary) !important;
-                            }
-                            
-                            /* 按钮样式 */
-                            button, .button {
-                                background-color: var(--dark-surface) !important;
-                                color: var(--dark-text) !important;
-                                border: 1px solid var(--dark-border) !important;
-                            }
-                            
-                            button:hover, .button:hover {
-                                background-color: ${colorScheme.surface}cc !important;
-                            }
-                            
-                            /* 导航栏和菜单 */
-                            .navbar, .nav, .menu, .navigation {
-                                background-color: var(--dark-surface) !important;
-                                border-bottom: 1px solid var(--dark-border) !important;
-                            }
-                            
-                            /* 卡片和面板 */
-                            .card, .panel, .box {
-                                background-color: var(--dark-surface) !important;
-                                border: 1px solid var(--dark-border) !important;
-                                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-                            }
-                            
-                            /* 弹窗和遮罩 */
-                            .modal, .popup, .overlay, .dialog {
-                                background-color: var(--dark-surface) !important;
-                                border: 1px solid var(--dark-border) !important;
-                            }
-                            
-                            .modal-backdrop, .overlay {
-                                background-color: rgba(0, 0, 0, 0.7) !important;
-                            }
-                            
-                            /* 广告和推广区域 */
-                            .ad, .ads, .advertisement, .promotion {
-                                background-color: var(--dark-surface) !important;
-                                border: 1px solid var(--dark-border) !important;
-                            }
-                            
-                            /* 图片和视频容器 */
-                            img, video, .image-container, .video-container {
-                                background-color: transparent !important;
-                            }
-                            
-                            /* 滚动条 */
-                            ::-webkit-scrollbar {
-                                width: 8px;
-                                height: 8px;
-                            }
-                            
-                            ::-webkit-scrollbar-track {
-                                background: var(--dark-bg) !important;
-                            }
-                            
-                            ::-webkit-scrollbar-thumb {
-                                background: var(--dark-border) !important;
-                                border-radius: 4px;
-                            }
-                            
-                            ::-webkit-scrollbar-thumb:hover {
-                                background: var(--dark-text-secondary) !important;
-                            }
-                            
-                            /* 代码和预格式化文本 */
-                            code, pre {
-                                background-color: ${colorScheme.background} !important;
-                                color: var(--dark-text) !important;
-                                border: 1px solid var(--dark-border) !important;
-                            }
-                            
-                            /* 表格 */
-                            table {
-                                border-color: var(--dark-border) !important;
-                            }
-                            
-                            th, td {
-                                background-color: var(--dark-surface) !important;
-                                border-color: var(--dark-border) !important;
-                            }
-                            
-                            /* 禁用状态 */
-                            [disabled], .disabled {
-                                background-color: ${colorScheme.background} !important;
-                                color: var(--dark-text-secondary) !important;
-                                border-color: var(--dark-border) !important;
-                            }
-                            
-                            /* 加载动画 */
-                            .loading, .spinner {
-                                border-color: var(--dark-border) !important;
-                                border-top-color: var(--dark-primary) !important;
-                            }
+                            html, body { background: ${colors.bg} !important; color: ${colors.text} !important; }
+                            * { background-color: ${colors.surface} !important; color: ${colors.text} !important; border-color: ${colors.border} !important; }
+                            a { color: #90caf9 !important; }
+                            img, video { background: transparent !important; }
                         `;
-                        
-                        // 添加平滑过渡效果
-                        document.body.style.transition = 'all 0.3s ease';
                     } else {
-                        // 强制网页变成浅色
-                        let style = document.getElementById('simple-dark-mode-style');
-                        if (!style) {
-                            style = document.createElement('style');
-                            style.id = 'simple-dark-mode-style';
-                            document.head.appendChild(style);
-                        }
-                        
-                        // 强制浅色模式样式
-                        style.textContent = `
-                            /* 基础样式 */
-                            :root {
-                                --light-bg: #ffffff !important;
-                                --light-surface: #f5f5f5 !important;
-                                --light-primary: #2196F3 !important;
-                                --light-text: #333333 !important;
-                                --light-text-secondary: #666666 !important;
-                                --light-border: #e0e0e0 !important;
-                            }
-                            
-                            /* 全局样式 */
-                            html, body {
-                                background-color: var(--light-bg) !important;
-                                color: var(--light-text) !important;
-                                transition: all 0.3s ease !important;
-                            }
-                            
-                            /* 所有元素的基础适配 */
-                            * {
-                                color: var(--light-text) !important;
-                                border-color: var(--light-border) !important;
-                                transition: all 0.3s ease !important;
-                            }
-                            
-                            /* 背景色适配 */
-                            body, div, section, article, header, footer, nav, aside,
-                            .container, .content, .wrapper, .page, .main,
-                            .card, .panel, .box, .section,
-                            .bg-white, .bg-light, .bg-gray-100, .bg-gray-200, .bg-gray-300,
-                            .white, .light, .gray, .bg-default {
-                                background-color: var(--light-surface) !important;
-                            }
-                            
-                            /* 文字颜色适配 */
-                            h1, h2, h3, h4, h5, h6, p, span, div, li, a, label, button {
-                                color: var(--light-text) !important;
-                            }
-                            
-                            /* 链接样式 */
-                            a {
-                                color: var(--light-primary) !important;
-                            }
-                            
-                            /* 输入框和表单元素 */
-                            input, textarea, select, button, .button {
-                                background-color: var(--light-bg) !important;
-                                color: var(--light-text) !important;
-                                border-color: var(--light-border) !important;
-                            }
-                            
-                            /* 按钮样式 */
-                            button, .button {
-                                background-color: var(--light-bg) !important;
-                                color: var(--light-text) !important;
-                                border: 1px solid var(--light-border) !important;
-                            }
-                            
-                            /* 导航栏和菜单 */
-                            .navbar, .nav, .menu, .navigation {
-                                background-color: var(--light-bg) !important;
-                                border-bottom: 1px solid var(--light-border) !important;
-                            }
-                            
-                            /* 卡片和面板 */
-                            .card, .panel, .box {
-                                background-color: var(--light-bg) !important;
-                                border: 1px solid var(--light-border) !important;
-                                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-                            }
-                            
-                            /* 弹窗和遮罩 */
-                            .modal, .popup, .overlay, .dialog {
-                                background-color: var(--light-bg) !important;
-                                border: 1px solid var(--light-border) !important;
-                            }
-                            
-                            .modal-backdrop, .overlay {
-                                background-color: rgba(0, 0, 0, 0.5) !important;
-                            }
-                            
-                            /* 广告和推广区域 */
-                            .ad, .ads, .advertisement, .promotion {
-                                background-color: var(--light-surface) !important;
-                                border: 1px solid var(--light-border) !important;
-                            }
-                        `;
+                        style.remove();
                     }
                 },
-                args: [enabled, darkModeLevel]
+                args: [enabled, colors]
             });
         });
     });
 }
 
-// 切换阅读模式
-function toggleReaderMode(enabled) {
+function updateDarkMode() {
+    const enabled = document.getElementById('dark-mode').checked;
+    if (enabled) toggleDarkMode(true);
+}
+
+// 护眼黄底
+function toggleEyeCare(enabled) {
     if (!currentTab) return;
-    
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
         func: (enabled) => {
+            let style = document.getElementById('simple-eye-care');
             if (enabled) {
-                // 添加阅读模式样式
-                let style = document.getElementById('simple-reader-mode-style');
                 if (!style) {
                     style = document.createElement('style');
-                    style.id = 'simple-reader-mode-style';
+                    style.id = 'simple-eye-care';
                     document.head.appendChild(style);
                 }
                 style.textContent = `
-                    /* 隐藏广告和干扰元素 */
-                    .ad, .ads, .advertisement, .banner, .sidebar, 
-                    .widget, .footer, .header, .nav, .menu, 
-                    .social, .share, .comment, .related, 
-                    .promotion, .popup, .modal {
-                        display: none !important;
-                    }
-                    
-                    /* 优化内容区域 */
-                    .content, .article, .post, .main-content, .entry-content {
-                        max-width: 800px !important;
-                        margin: 0 auto !important;
-                        padding: 20px !important;
-                    }
-                    
-                    /* 优化字体和行高 */
-                    body {
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
-                        font-size: 16px !important;
-                        line-height: 1.6 !important;
-                    }
-                    
-                    /* 优化标题 */
-                    h1, h2, h3, h4, h5, h6 {
-                        margin-top: 1.5em !important;
-                        margin-bottom: 0.5em !important;
-                    }
-                    
-                    /* 优化段落 */
-                    p {
-                        margin-bottom: 1em !important;
-                    }
+                    html, body { background: #f5f0e1 !important; }
+                    * { background-color: #f5f0e1 !important; color: #5c4b37 !important; }
                 `;
-            } else {
-                // 移除阅读模式样式
-                const style = document.getElementById('simple-reader-mode-style');
-                if (style) {
-                    style.remove();
-                }
+            } else if (style) {
+                style.remove();
             }
         },
         args: [enabled]
     });
 }
 
-// 设置字体大小
-function setFontSize(size) {
+// 阅读模式
+function toggleReaderMode(enabled) {
     if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            let style = document.getElementById('simple-reader-mode');
+            if (enabled) {
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'simple-reader-mode';
+                    document.head.appendChild(style);
+                }
+                style.textContent = `
+                    .ad, .ads, .sidebar, .widget, .social, .share, .comment, .related, .promotion, .popup, .modal, .banner { display: none !important; }
+                    .content, article, .article, .post { max-width: 800px !important; margin: 0 auto !important; }
+                `;
+            } else if (style) {
+                style.remove();
+            }
+        },
+        args: [enabled]
+    });
+}
+
+// 自动滚屏
+function toggleAutoScroll(enabled) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            if (enabled) {
+                window.simpleAutoScroll = setInterval(() => {
+                    window.scrollBy(0, 1);
+                }, 50);
+            } else {
+                clearInterval(window.simpleAutoScroll);
+            }
+        },
+        args: [enabled]
+    });
+}
+
+// 平滑滚动
+function toggleSmoothScroll(enabled) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            document.documentElement.style.scrollBehavior = enabled ? 'smooth' : 'auto';
+        },
+        args: [enabled]
+    });
+}
+
+// 更新文本样式
+function updateTextStyle() {
+    if (!currentTab) return;
+    const fontSize = document.getElementById('font-size').value;
+    const lineHeight = document.getElementById('line-height').value;
+    const wordSpacing = document.getElementById('word-spacing').value;
     
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
-        func: (size) => {
-            // 添加字体大小样式
-            let style = document.getElementById('simple-font-size-style');
+        func: (fontSize, lineHeight, wordSpacing) => {
+            let style = document.getElementById('simple-text-style');
             if (!style) {
                 style = document.createElement('style');
-                style.id = 'simple-font-size-style';
+                style.id = 'simple-text-style';
                 document.head.appendChild(style);
             }
             style.textContent = `
-                body {
-                    font-size: ${size}px !important;
-                }
-                
-                p {
-                    font-size: ${size}px !important;
-                }
-                
-                h1 {
-                    font-size: ${size * 2}px !important;
-                }
-                
-                h2 {
-                    font-size: ${size * 1.5}px !important;
-                }
-                
-                h3 {
-                    font-size: ${size * 1.2}px !important;
-                }
+                body { font-size: ${fontSize}px !important; line-height: ${lineHeight} !important; word-spacing: ${wordSpacing}px !important; }
+                p, div { font-size: ${fontSize}px !important; line-height: ${lineHeight} !important; }
             `;
         },
-        args: [size]
-    });
-}
-
-// 智能去水印
-function toggleRemoveWatermark(enabled) {
-    if (!currentTab) return;
-    
-    chrome.scripting.executeScript({
-        target: { tabId: currentTab.id },
-        func: (enabled) => {
-            if (enabled) {
-                // 添加去水印样式
-                let style = document.getElementById('simple-remove-watermark-style');
-                if (!style) {
-                    style = document.createElement('style');
-                    style.id = 'simple-remove-watermark-style';
-                    document.head.appendChild(style);
-                }
-                style.textContent = `
-                    /* 隐藏常见水印和版权标签 */
-                    .watermark, .copyright, .copy-protected, .watermark-layer,
-                    .video-watermark, .image-watermark, .content-watermark,
-                    [class*="watermark"], [class*="copyright"] {
-                        display: none !important;
-                        opacity: 0 !important;
-                        visibility: hidden !important;
-                    }
-                `;
-            } else {
-                // 移除去水印样式
-                const style = document.getElementById('simple-remove-watermark-style');
-                if (style) {
-                    style.remove();
-                }
-            }
-        },
-        args: [enabled]
-    });
-}
-
-// 网页净化
-function toggleCleanPage(enabled) {
-    if (!currentTab) return;
-    
-    chrome.scripting.executeScript({
-        target: { tabId: currentTab.id },
-        func: (enabled) => {
-            if (enabled) {
-                // 添加网页净化样式
-                let style = document.getElementById('simple-clean-page-style');
-                if (!style) {
-                    style = document.createElement('style');
-                    style.id = 'simple-clean-page-style';
-                    document.head.appendChild(style);
-                }
-                style.textContent = `
-                    /* 隐藏弹窗和遮罩 */
-                    .popup, .modal, .overlay, .dialog, .lightbox,
-                    .login-overlay, .paywall, .subscription-wall,
-                    .cookie-banner, .consent-banner, .notification {
-                        display: none !important;
-                    }
-                    
-                    /* 移除推广内容 */
-                    .promotion, .sponsored, .advertisement, .ad, .ads {
-                        display: none !important;
-                    }
-                    
-                    /* 移除侧边栏和干扰元素 */
-                    .sidebar, .widget, .share, .social, .comment {
-                        display: none !important;
-                    }
-                `;
-                
-                // 移除弹窗脚本
-                const scripts = document.querySelectorAll('script');
-                scripts.forEach(script => {
-                    if (script.textContent.includes('popup') || script.textContent.includes('modal')) {
-                        script.remove();
-                    }
-                });
-            } else {
-                // 移除网页净化样式
-                const style = document.getElementById('simple-clean-page-style');
-                if (style) {
-                    style.remove();
-                }
-            }
-        },
-        args: [enabled]
+        args: [fontSize, lineHeight, wordSpacing]
     });
 }
 
 // 强制复制
 function toggleForceCopy(enabled) {
     if (!currentTab) return;
-    
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
         func: (enabled) => {
             if (enabled) {
-                // 移除复制限制
-                document.addEventListener('copy', (e) => {
-                    e.stopPropagation();
-                }, true);
-                
-                document.addEventListener('cut', (e) => {
-                    e.stopPropagation();
-                }, true);
-                
-                document.addEventListener('paste', (e) => {
-                    e.stopPropagation();
-                }, true);
-                
-                // 移除右键限制
-                document.addEventListener('contextmenu', (e) => {
-                    e.stopPropagation();
-                }, true);
-                
-                // 移除选择限制
-                document.addEventListener('selectstart', (e) => {
-                    e.stopPropagation();
-                }, true);
-                
-                // 移除键盘事件限制
-                document.addEventListener('keydown', (e) => {
-                    if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'x' || e.key === 'v')) {
-                        e.stopPropagation();
-                    }
-                }, true);
-                
-                // 添加全局样式允许选择
-                let style = document.getElementById('simple-force-copy-style');
-                if (!style) {
-                    style = document.createElement('style');
-                    style.id = 'simple-force-copy-style';
-                    document.head.appendChild(style);
-                }
-                style.textContent = `
-                    * {
-                        user-select: text !important;
-                        -webkit-user-select: text !important;
-                        -moz-user-select: text !important;
-                        -ms-user-select: text !important;
-                    }
-                    
-                    body {
-                        user-select: text !important;
-                        -webkit-user-select: text !important;
-                        -moz-user-select: text !important;
-                        -ms-user-select: text !important;
-                    }
-                `;
+                ['copy', 'cut', 'paste', 'contextmenu', 'selectstart'].forEach(event => {
+                    document.addEventListener(event, e => e.stopPropagation(), true);
+                });
+                let style = document.createElement('style');
+                style.id = 'simple-force-copy';
+                style.textContent = '* { user-select: text !important; -webkit-user-select: text !important; }';
+                document.head.appendChild(style);
             } else {
-                // 移除强制复制样式
-                const style = document.getElementById('simple-force-copy-style');
-                if (style) {
-                    style.remove();
-                }
+                document.getElementById('simple-force-copy')?.remove();
             }
         },
         args: [enabled]
@@ -896,259 +686,67 @@ function toggleForceCopy(enabled) {
 // 视频增强
 function toggleVideoEnhance(enabled) {
     if (!currentTab) return;
-    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(video => {
+                if (enabled) {
+                    video.controls = true;
+                    video.setAttribute('controlsList', 'nodownload');
+                }
+            });
+        },
+        args: [enabled]
+    });
+}
+
+// 设置视频倍速
+function setVideoSpeed(speed) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (speed) => {
+            document.querySelectorAll('video').forEach(v => v.playbackRate = speed);
+        },
+        args: [speed]
+    });
+}
+
+// 跳过广告
+function toggleSkipAds(enabled) {
+    if (!currentTab) return;
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
         func: (enabled) => {
             if (enabled) {
-                // 为所有视频元素添加增强功能
-                const videos = document.querySelectorAll('video');
-                videos.forEach(video => {
-                    // 启用画中画
-                    if (video.requestPictureInPicture) {
-                        video.controlsList.add('picture-in-picture');
-                    }
-                    
-                    // 添加倍速控制
-                    const speedControls = document.createElement('div');
-                    speedControls.className = 'video-speed-controls';
-                    speedControls.style.cssText = `
-                        position: absolute;
-                        top: 10px;
-                        right: 10px;
-                        background: rgba(0,0,0,0.7);
-                        color: white;
-                        padding: 5px 10px;
-                        border-radius: 4px;
-                        font-size: 12px;
-                        z-index: 1000;
-                    `;
-                    
-                    const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
-                    speeds.forEach(speed => {
-                        const button = document.createElement('button');
-                        button.textContent = speed + 'x';
-                        button.style.cssText = `
-                            background: transparent;
-                            border: 1px solid white;
-                            color: white;
-                            padding: 2px 6px;
-                            margin: 0 2px;
-                            border-radius: 3px;
-                            cursor: pointer;
-                        `;
-                        button.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            video.playbackRate = speed;
+                const skipAds = () => {
+                    document.querySelectorAll('.ad, .ads, .advertisement, [class*="ad-"], [id*="ad-"]').forEach(el => el.remove());
+                    document.querySelectorAll('video').forEach(v => {
+                        v.addEventListener('play', () => {
+                            if (v.currentTime < 5) v.currentTime = 5;
                         });
-                        speedControls.appendChild(button);
                     });
-                    
-                    // 添加画中画按钮
-                    const pipButton = document.createElement('button');
-                    pipButton.textContent = 'PIP';
-                    pipButton.style.cssText = `
-                        background: transparent;
-                        border: 1px solid white;
-                        color: white;
-                        padding: 2px 6px;
-                        margin: 0 2px;
-                        border-radius: 3px;
-                        cursor: pointer;
-                    `;
-                    pipButton.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        if (video.requestPictureInPicture) {
-                            video.requestPictureInPicture();
-                        }
-                    });
-                    speedControls.appendChild(pipButton);
-                    
-                    // 将控制添加到视频容器
-                    const container = video.parentElement;
-                    if (container) {
-                        container.style.position = 'relative';
-                        container.appendChild(speedControls);
-                    }
-                });
-                
-                // 添加视频增强样式
-                let style = document.getElementById('simple-video-enhance-style');
-                if (!style) {
-                    style = document.createElement('style');
-                    style.id = 'simple-video-enhance-style';
-                    document.head.appendChild(style);
-                }
-                style.textContent = `
-                    /* 视频容器样式 */
-                    video {
-                        max-width: 100% !important;
-                        height: auto !important;
-                    }
-                    
-                    /* 视频控制样式 */
-                    .video-speed-controls {
-                        opacity: 0.8;
-                        transition: opacity 0.3s ease;
-                    }
-                    
-                    .video-speed-controls:hover {
-                        opacity: 1;
-                    }
-                `;
-            } else {
-                // 移除视频增强样式
-                const style = document.getElementById('simple-video-enhance-style');
-                if (style) {
-                    style.remove();
-                }
-                
-                // 移除视频控制
-                const controls = document.querySelectorAll('.video-speed-controls');
-                controls.forEach(control => control.remove());
-            }
-        },
-        args: [enabled]
-    });
-}
-
-// 滚动平滑
-function toggleSmoothScroll(enabled) {
-    if (!currentTab) return;
-    
-    chrome.scripting.executeScript({
-        target: { tabId: currentTab.id },
-        func: (enabled) => {
-            if (enabled) {
-                // 添加平滑滚动样式
-                let style = document.getElementById('simple-smooth-scroll-style');
-                if (!style) {
-                    style = document.createElement('style');
-                    style.id = 'simple-smooth-scroll-style';
-                    document.head.appendChild(style);
-                }
-                style.textContent = `
-                    /* 平滑滚动 */
-                    html {
-                        scroll-behavior: smooth !important;
-                    }
-                    
-                    /* 自动阅读模式 */
-                    .auto-scroll {
-                        animation: autoScroll 60s linear infinite;
-                    }
-                    
-                    @keyframes autoScroll {
-                        from { transform: translateY(0); }
-                        to { transform: translateY(-100%); }
-                    }
-                `;
-            } else {
-                // 移除平滑滚动样式
-                const style = document.getElementById('simple-smooth-scroll-style');
-                if (style) {
-                    style.remove();
-                }
-            }
-        },
-        args: [enabled]
-    });
-}
-
-// 深色模式增强
-function toggleEnhancedDark(enabled) {
-    if (!currentTab) return;
-    
-    // 当开启深色模式增强时，确保深色模式也开启
-    if (enabled) {
-        const darkModeSwitch = document.getElementById('dark-mode');
-        if (!darkModeSwitch.checked) {
-            darkModeSwitch.checked = true;
-            saveSetting('darkMode', true);
-            toggleDarkMode(true);
-        }
-    }
-    
-    chrome.scripting.executeScript({
-        target: { tabId: currentTab.id },
-        func: (enabled) => {
-            if (enabled) {
-                // 智能识别网页主题色并生成深色模式
-                const detectThemeColor = () => {
-                    // 检测页面主要颜色
-                    const elements = document.querySelectorAll('body, h1, h2, h3, p, a');
-                    const colors = [];
-                    
-                    elements.forEach(element => {
-                        const computedStyle = window.getComputedStyle(element);
-                        const color = computedStyle.color;
-                        colors.push(color);
-                    });
-                    
-                    // 简单的颜色分析
-                    return colors[0] || '#000000';
                 };
-                
-                const themeColor = detectThemeColor();
-                
-                // 添加增强的深色模式样式
-                let style = document.getElementById('simple-enhanced-dark-style');
-                if (!style) {
-                    style = document.createElement('style');
-                    style.id = 'simple-enhanced-dark-style';
-                    document.head.appendChild(style);
-                }
-                style.textContent = `
-                    /* 增强的深色模式 */
-                    body {
-                        background-color: #121212 !important;
-                        color: #e0e0e0 !important;
-                    }
-                    
-                    /* 智能适配元素 */
-                    * {
-                        color: inherit !important;
-                        border-color: rgba(255,255,255,0.1) !important;
-                    }
-                    
-                    /* 链接和交互元素 */
-                    a, button, input, select, textarea {
-                        color: #90caf9 !important;
-                        background-color: rgba(255,255,255,0.05) !important;
-                    }
-                    
-                    /* 卡片和容器 */
-                    .card, .container, .panel, .box {
-                        background-color: #1e1e1e !important;
-                        border-color: #333 !important;
-                    }
-                    
-                    /* 滚动条 */
-                    ::-webkit-scrollbar {
-                        width: 8px;
-                        height: 8px;
-                    }
-                    
-                    ::-webkit-scrollbar-track {
-                        background: #121212;
-                    }
-                    
-                    ::-webkit-scrollbar-thumb {
-                        background: #333;
-                        border-radius: 4px;
-                    }
-                    
-                    ::-webkit-scrollbar-thumb:hover {
-                        background: #555;
-                    }
-                `;
-            } else {
-                // 移除增强的深色模式样式
-                const style = document.getElementById('simple-enhanced-dark-style');
-                if (style) {
-                    style.remove();
-                }
+                skipAds();
+                setInterval(skipAds, 3000);
             }
+        },
+        args: [enabled]
+    });
+}
+
+// 禁止自动暂停
+function togglePreventPause(enabled) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            document.querySelectorAll('video').forEach(video => {
+                if (enabled) {
+                    video.addEventListener('pause', () => video.play(), true);
+                }
+            });
         },
         args: [enabled]
     });
@@ -1157,36 +755,16 @@ function toggleEnhancedDark(enabled) {
 // 清除跟踪参数
 function toggleRemoveTracking(enabled) {
     if (!currentTab) return;
-    
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
         func: (enabled) => {
             if (enabled) {
-                // 清除URL中的跟踪参数
                 const cleanUrl = () => {
                     const url = new URL(window.location.href);
-                    const params = url.searchParams;
-                    const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid', 'msclkid', 'mc_eid', 'utm_id', 'utm_source_platform', 'utm_creative', 'utm_position', 'utm_target_id', 'utm_matchtype', 'utm_network', 'utm_device', 'utm_placement', 'utm_referrer', 'utm_social_source', 'utm_social_medium', 'utm_social_campaign', 'utm_social_term', 'utm_social_content'];
-                    
-                    trackingParams.forEach(param => {
-                        if (params.has(param)) {
-                            params.delete(param);
-                        }
-                    });
-                    
-                    const newUrl = url.origin + url.pathname + (params.toString() ? '?' + params.toString() : '') + url.hash;
-                    if (newUrl !== window.location.href) {
-                        window.history.replaceState({}, '', newUrl);
-                    }
+                    ['utm_source', 'utm_medium', 'utm_campaign', 'fbclid', 'gclid'].forEach(p => url.searchParams.delete(p));
+                    window.history.replaceState({}, '', url);
                 };
-                
-                // 执行一次清理
                 cleanUrl();
-                
-                // 监听URL变化
-                window.addEventListener('popstate', cleanUrl);
-                window.addEventListener('pushstate', cleanUrl);
-                window.addEventListener('replacestate', cleanUrl);
             }
         },
         args: [enabled]
@@ -1196,32 +774,19 @@ function toggleRemoveTracking(enabled) {
 // 隐藏Cookie提示
 function toggleHideCookie(enabled) {
     if (!currentTab) return;
-    
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
         func: (enabled) => {
+            let style = document.getElementById('simple-hide-cookie');
             if (enabled) {
-                // 添加隐藏Cookie提示样式
-                let style = document.getElementById('simple-hide-cookie-style');
                 if (!style) {
                     style = document.createElement('style');
-                    style.id = 'simple-hide-cookie-style';
+                    style.id = 'simple-hide-cookie';
                     document.head.appendChild(style);
                 }
-                style.textContent = `
-                    /* 隐藏Cookie提示 */
-                    .cookie-banner, .cookie-consent, .cookie-notice, .consent-banner, .gdpr-banner, .privacy-banner {
-                        display: none !important;
-                        opacity: 0 !important;
-                        visibility: hidden !important;
-                    }
-                `;
-            } else {
-                // 移除隐藏Cookie提示样式
-                const style = document.getElementById('simple-hide-cookie-style');
-                if (style) {
-                    style.remove();
-                }
+                style.textContent = '.cookie-banner, .cookie-consent, .cookie-notice, .gdpr-banner { display: none !important; }';
+            } else if (style) {
+                style.remove();
             }
         },
         args: [enabled]
@@ -1231,122 +796,160 @@ function toggleHideCookie(enabled) {
 // 禁止媒体权限
 function toggleBlockMediaPermission(enabled) {
     if (!currentTab) return;
-    
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
         func: (enabled) => {
             if (enabled) {
-                // 拦截媒体权限请求
-                const originalGetUserMedia = navigator.mediaDevices.getUserMedia;
-                navigator.mediaDevices.getUserMedia = async (constraints) => {
-                    throw new Error('Media permission blocked by Simple Dark Mode & Reader extension');
-                };
-                
-                // 拦截摄像头和麦克风访问
-                const originalEnumerateDevices = navigator.mediaDevices.enumerateDevices;
-                navigator.mediaDevices.enumerateDevices = async () => {
-                    return [];
-                };
+                navigator.mediaDevices.getUserMedia = () => Promise.reject(new Error('Blocked'));
             }
         },
         args: [enabled]
     });
 }
 
-// 检测网站原生主题并同步开关状态
-function detectNativeTheme() {
+// 防指纹追踪
+function toggleAntiFingerprint(enabled) {
     if (!currentTab) return;
-    
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
-        func: () => {
-            // 检测系统主题设置
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            // 检测网页是否有原生深色模式
-            const hasNativeDark = document.documentElement.classList.contains('dark') || 
-                               document.body.classList.contains('dark') ||
-                               getComputedStyle(document.body).backgroundColor.toLowerCase().includes('rgb(18, 18, 18)') ||
-                               getComputedStyle(document.body).backgroundColor.toLowerCase().includes('rgb(26, 26, 26)');
-            
-            return { prefersDark, hasNativeDark };
-        }
-    }, (results) => {
-        if (results && results[0] && results[0].result) {
-            const { prefersDark, hasNativeDark } = results[0].result;
-            const isDark = prefersDark || hasNativeDark;
-            
-            // 同步开关状态
-            document.getElementById('dark-mode').checked = isDark;
-            
-            // 保存网站特定的主题状态
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                const currentTab = tabs[0];
-                const url = currentTab?.url || '';
-                const domain = new URL(url).hostname || '';
-                
-                if (domain) {
-                    chrome.storage.local.get('siteSettings', (result) => {
-                        const siteSettings = result.siteSettings || {};
-                        if (!siteSettings[domain]) {
-                            siteSettings[domain] = {};
-                        }
-                        siteSettings[domain].darkMode = isDark;
-                        chrome.storage.local.set({ siteSettings });
-                    });
-                }
-            });
-        }
+        func: (enabled) => {
+            if (enabled) {
+                Object.defineProperty(navigator, 'webdriver', { get: () => false });
+                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3] });
+            }
+        },
+        args: [enabled]
     });
 }
 
-// 检查 AdGuard 状态
-function checkAdGuardStatus() {
-    // 模拟AdGuard状态检测
-    const adguardStatus = document.getElementById('adguard-status');
-    const adguardButton = document.getElementById('open-adguard-assistant');
-    
-    adguardStatus.className = 'adguard-status adguard-status-not-installed';
-    adguardStatus.innerHTML = `
-        <span class="status-label">状态:</span>
-        <span class="status-text">未安装</span>
-    `;
-    adguardButton.disabled = true;
+// 页面净化
+function toggleCleanPage(enabled) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            let style = document.getElementById('simple-clean-page');
+            if (enabled) {
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'simple-clean-page';
+                    document.head.appendChild(style);
+                }
+                style.textContent = `
+                    .ad, .ads, .popup, .modal, .banner, .sidebar, .widget, .promotion, .qr-code, .qrcode { display: none !important; }
+                    .floating-button, .float-btn, .back-to-top { display: none !important; }
+                `;
+            } else if (style) {
+                style.remove();
+            }
+        },
+        args: [enabled]
+    });
 }
 
-// 打开 AdGuard 助手
-function openAdGuardAssistant() {
-    // 模拟打开AdGuard助手
-    alert('AdGuard 助手功能未实现');
+// 屏蔽弹窗
+function toggleBlockPopups(enabled) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            if (enabled) {
+                window.open = () => null;
+                window.alert = () => null;
+                window.confirm = () => true;
+            }
+        },
+        args: [enabled]
+    });
 }
 
-// 绑定 AdGuard 相关事件监听器
-function bindAdGuardEventListeners() {
-    // 打开 AdGuard 助手按钮
-    document.getElementById('open-adguard-assistant').addEventListener('click', openAdGuardAssistant);
+// 禁止自动刷新
+function toggleBlockRefresh(enabled) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            if (enabled) {
+                const meta = document.querySelector('meta[http-equiv="refresh"]');
+                if (meta) meta.remove();
+                Object.defineProperty(window.location, 'reload', { value: () => {} });
+            }
+        },
+        args: [enabled]
+    });
 }
 
-// 初始化
-async function init() {
-    // 获取当前标签页
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    currentTab = tabs[0];
-    
-    // 加载用户设置
-    loadSettings();
-    
-    // 绑定事件监听器
-    bindEventListeners();
-    
-    // 绑定 AdGuard 事件监听器
-    bindAdGuardEventListeners();
-    
-    // 检查 AdGuard 状态
-    checkAdGuardStatus();
-    
-    // 检测网站原生主题并同步开关状态
-    detectNativeTheme();
+// 关闭GIF动画
+function toggleBlockGif(enabled) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            let style = document.getElementById('simple-block-gif');
+            if (enabled) {
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'simple-block-gif';
+                    document.head.appendChild(style);
+                }
+                style.textContent = 'img[src*=".gif"] { display: none !important; }';
+            } else if (style) {
+                style.remove();
+            }
+        },
+        args: [enabled]
+    });
 }
 
-// 调用初始化函数
-init();
+// 定时刷新
+function setupAutoRefresh(seconds) {
+    if (refreshInterval) clearInterval(refreshInterval);
+    if (seconds > 0) {
+        refreshInterval = setInterval(() => {
+            if (currentTab) chrome.tabs.reload(currentTab.id);
+        }, seconds * 1000);
+    }
+}
+
+// 切换UA
+function toggleUserAgent(type) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (type) => {
+            const uas = {
+                mobile: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15',
+                desktop: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            };
+            if (type !== 'default') {
+                Object.defineProperty(navigator, 'userAgent', { get: () => uas[type] || navigator.userAgent });
+            }
+        },
+        args: [type]
+    });
+}
+
+// 深色模式增强
+function toggleEnhancedDark(enabled) {
+    if (!currentTab) return;
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            let style = document.getElementById('simple-enhanced-dark');
+            if (enabled) {
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'simple-enhanced-dark';
+                    document.head.appendChild(style);
+                }
+                style.textContent = `
+                    body { filter: brightness(0.9) contrast(1.1) !important; }
+                    img, video { filter: brightness(0.8) !important; }
+                `;
+            } else if (style) {
+                style.remove();
+            }
+        },
+        args: [enabled]
+    });
+}
