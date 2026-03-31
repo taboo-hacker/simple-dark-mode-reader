@@ -89,5 +89,5 @@ MIT License
 
 ## 联系方式
 
-- 项目地址：[GitHub 仓库链接]（未来添加）
-- 反馈邮箱：[邮箱地址]（未来添加）
+- 项目地址：[https://github.com/taboo-hacker/simple-dark-mode-reader](https://github.com/taboo-hacker/simple-dark-mode-reader)
+- 反馈邮箱：leo43991314520@163.com
