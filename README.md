@@ -123,7 +123,7 @@
    - 查看 AdGuard 安装状态和运行状态
    - 点击「打开 AdGuard 助手」按钮启动 AdGuard 助手
    - 扩展会自动监听 AdGuard 拦截事件
-   - 与 AdGuard 共享过滤状态
+   - 与 AdGuard 共享过滤状态（未实现）
 
 ## 开发指南
 
