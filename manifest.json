@@ -20,7 +20,8 @@
     "activeTab",
     "scripting",
     "storage",
-    "management"
+    "management",
+    "declarativeContent"
   ],
   "host_permissions": [
     "<all_urls>"

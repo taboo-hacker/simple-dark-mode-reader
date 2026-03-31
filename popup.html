@@ -8,42 +8,176 @@
 </head>
 <body>
     <div class="container">
-        <h1>Simple Dark Mode & Reader</h1>
+        <header class="header">
+            <h1>Simple Dark Mode & Reader</h1>
+        </header>
         
-        <!-- 深色模式开关 -->
-        <div class="option">
-            <label for="dark-mode">深色模式</label>
-            <label class="switch">
-                <input type="checkbox" id="dark-mode">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        
-        <!-- 阅读模式开关 -->
-        <div class="option">
-            <label for="reader-mode">阅读模式</label>
-            <label class="switch">
-                <input type="checkbox" id="reader-mode">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        
-        <!-- 字体大小调节 -->
-        <div class="option">
-            <label for="font-size">字体大小: <span id="font-size-value">16</span>px</label>
-            <input type="range" id="font-size" min="12" max="24" value="16">
-        </div>
-        
-        <!-- AdGuard 集成 -->
-        <div class="option adguard-section">
-            <h2>AdGuard 集成</h2>
-            <div id="adguard-status" class="status-message">
-                检测中...
+        <!-- 基础功能区 -->
+        <section class="section basic-section">
+            <h2 class="section-title">基础功能</h2>
+            
+            <!-- 深色模式开关 -->
+            <div class="option">
+                <label for="dark-mode" class="option-label">
+                    <span class="option-icon">🌙</span>
+                    <span class="option-text">深色模式</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="dark-mode">
+                    <span class="slider round"></span>
+                </label>
             </div>
-            <button id="open-adguard-assistant" class="adguard-button" disabled>
-                打开 AdGuard 助手
-            </button>
-        </div>
+            
+            <!-- 深色模式档位选择 -->
+            <div class="option dark-mode-level">
+                <label class="option-label">
+                    <span class="option-icon">🎨</span>
+                    <span class="option-text">深色模式档位</span>
+                </label>
+                <select id="dark-mode-level" class="dark-level-select">
+                    <option value="standard">标准深色</option>
+                    <option value="pure-black">纯黑护眼</option>
+                    <option value="soft">柔和深色</option>
+                </select>
+            </div>
+            
+            <!-- 网站白名单 -->
+            <div class="option">
+                <label for="add-whitelist" class="option-label">
+                    <span class="option-icon">📋</span>
+                    <span class="option-text">添加到白名单</span>
+                </label>
+                <button id="add-whitelist" class="whitelist-button">
+                    添加
+                </button>
+            </div>
+            
+            <!-- 一键还原 -->
+            <div class="option">
+                <label for="reset-styles" class="option-label">
+                    <span class="option-icon">↺</span>
+                    <span class="option-text">一键还原</span>
+                </label>
+                <button id="reset-styles" class="reset-button">
+                    还原
+                </button>
+            </div>
+            
+            <!-- 阅读模式开关 -->
+            <div class="option">
+                <label for="reader-mode" class="option-label">
+                    <span class="option-icon">📖</span>
+                    <span class="option-text">阅读模式</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="reader-mode">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <!-- 字体大小调节 -->
+            <div class="option font-size-option">
+                <label for="font-size" class="option-label">
+                    <span class="option-icon">📝</span>
+                    <span class="option-text">字体大小: <span id="font-size-value">16</span>px</span>
+                </label>
+                <input type="range" id="font-size" min="12" max="24" value="16">
+            </div>
+        </section>
+        
+        <!-- 高级功能区 -->
+        <section class="section advanced-section">
+            <h2 class="section-title">高级功能</h2>
+            
+            <div class="advanced-grid">
+                <!-- 智能去水印 -->
+                <div class="advanced-item">
+                    <div class="advanced-icon">🖼️</div>
+                    <div class="advanced-content">
+                        <label for="remove-watermark" class="advanced-label">智能去水印</label>
+                        <label class="switch">
+                            <input type="checkbox" id="remove-watermark">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 网页净化 -->
+                <div class="advanced-item">
+                    <div class="advanced-icon">🧹</div>
+                    <div class="advanced-content">
+                        <label for="clean-page" class="advanced-label">网页净化</label>
+                        <label class="switch">
+                            <input type="checkbox" id="clean-page">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 强制复制 -->
+                <div class="advanced-item">
+                    <div class="advanced-icon">📋</div>
+                    <div class="advanced-content">
+                        <label for="force-copy" class="advanced-label">强制复制</label>
+                        <label class="switch">
+                            <input type="checkbox" id="force-copy">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 视频增强 -->
+                <div class="advanced-item">
+                    <div class="advanced-icon">🎬</div>
+                    <div class="advanced-content">
+                        <label for="video-enhance" class="advanced-label">视频增强</label>
+                        <label class="switch">
+                            <input type="checkbox" id="video-enhance">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 滚动平滑 -->
+                <div class="advanced-item">
+                    <div class="advanced-icon">📜</div>
+                    <div class="advanced-content">
+                        <label for="smooth-scroll" class="advanced-label">滚动平滑</label>
+                        <label class="switch">
+                            <input type="checkbox" id="smooth-scroll">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 深色模式增强 -->
+                <div class="advanced-item">
+                    <div class="advanced-icon">✨</div>
+                    <div class="advanced-content">
+                        <label for="enhanced-dark" class="advanced-label">深色模式增强</label>
+                        <label class="switch">
+                            <input type="checkbox" id="enhanced-dark">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- AdGuard 集成区 -->
+        <section class="section adguard-section">
+            <h2 class="section-title">AdGuard 集成</h2>
+            
+            <div class="adguard-content">
+                <div id="adguard-status" class="adguard-status">
+                    <span class="status-label">状态:</span>
+                    <span class="status-text">检测中...</span>
+                </div>
+                <button id="open-adguard-assistant" class="adguard-button" disabled>
+                    打开 AdGuard 助手
+                </button>
+            </div>
+        </section>
     </div>
     <script src="popup.js"></script>
 </body>
