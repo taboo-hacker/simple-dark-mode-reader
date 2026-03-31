@@ -1,7 +1,4 @@
-// 全局变量
 let currentTab;
-
-
 
 // 加载用户设置
 function loadSettings() {
@@ -11,7 +8,7 @@ function loadSettings() {
         const url = currentTab?.url || '';
         const domain = new URL(url).hostname || '';
         
-        chrome.storage.local.get(['darkMode', 'readerMode', 'fontSize', 'removeWatermark', 'cleanPage', 'forceCopy', 'videoEnhance', 'smoothScroll', 'enhancedDark', 'darkModeLevel', 'whitelist', 'siteSettings'], (result) => {
+        chrome.storage.local.get(['darkMode', 'readerMode', 'fontSize', 'removeWatermark', 'cleanPage', 'forceCopy', 'videoEnhance', 'smoothScroll', 'enhancedDark', 'darkModeLevel', 'whitelist', 'siteSettings', 'removeTracking', 'hideCookie', 'blockMediaPermission'], (result) => {
             // 设置深色模式开关
             if (result.siteSettings?.[domain]?.darkMode !== undefined) {
                 document.getElementById('dark-mode').checked = result.siteSettings[domain].darkMode;
@@ -65,6 +62,21 @@ function loadSettings() {
                 document.getElementById('dark-mode-level').value = result.siteSettings[domain].darkModeLevel;
             } else if (result.darkModeLevel !== undefined) {
                 document.getElementById('dark-mode-level').value = result.darkModeLevel;
+            }
+            
+            // 设置清除跟踪参数开关
+            if (result.removeTracking !== undefined) {
+                document.getElementById('remove-tracking').checked = result.removeTracking;
+            }
+            
+            // 设置隐藏Cookie提示开关
+            if (result.hideCookie !== undefined) {
+                document.getElementById('hide-cookie').checked = result.hideCookie;
+            }
+            
+            // 设置禁止媒体权限开关
+            if (result.blockMediaPermission !== undefined) {
+                document.getElementById('block-media-permission').checked = result.blockMediaPermission;
             }
         });
     });
@@ -162,6 +174,27 @@ function bindEventListeners() {
     // 一键还原按钮
     document.getElementById('reset-styles').addEventListener('click', () => {
         resetStyles();
+    });
+    
+    // 清除跟踪参数开关
+    document.getElementById('remove-tracking').addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        saveSetting('removeTracking', enabled);
+        toggleRemoveTracking(enabled);
+    });
+    
+    // 隐藏Cookie提示开关
+    document.getElementById('hide-cookie').addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        saveSetting('hideCookie', enabled);
+        toggleHideCookie(enabled);
+    });
+    
+    // 禁止媒体权限开关
+    document.getElementById('block-media-permission').addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        saveSetting('blockMediaPermission', enabled);
+        toggleBlockMediaPermission(enabled);
     });
 }
 
@@ -621,18 +654,29 @@ function toggleReaderMode(enabled) {
                         display: none !important;
                     }
                     
-                    /* 优化阅读区域 */
-                    body {
+                    /* 优化内容区域 */
+                    .content, .article, .post, .main-content, .entry-content {
                         max-width: 800px !important;
                         margin: 0 auto !important;
                         padding: 20px !important;
                     }
                     
-                    /* 优化文章内容 */
-                    article, .article, .content, .main-content {
-                        max-width: 100% !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
+                    /* 优化字体和行高 */
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+                        font-size: 16px !important;
+                        line-height: 1.6 !important;
+                    }
+                    
+                    /* 优化标题 */
+                    h1, h2, h3, h4, h5, h6 {
+                        margin-top: 1.5em !important;
+                        margin-bottom: 0.5em !important;
+                    }
+                    
+                    /* 优化段落 */
+                    p {
+                        margin-bottom: 1em !important;
                     }
                 `;
             } else {
@@ -667,99 +711,24 @@ function setFontSize(size) {
                 }
                 
                 p {
-                    font-size: 1em !important;
-                    line-height: 1.6 !important;
+                    font-size: ${size}px !important;
                 }
                 
                 h1 {
-                    font-size: 2em !important;
+                    font-size: ${size * 2}px !important;
                 }
                 
                 h2 {
-                    font-size: 1.8em !important;
+                    font-size: ${size * 1.5}px !important;
                 }
                 
                 h3 {
-                    font-size: 1.6em !important;
-                }
-                
-                h4 {
-                    font-size: 1.4em !important;
-                }
-                
-                h5 {
-                    font-size: 1.2em !important;
-                }
-                
-                h6 {
-                    font-size: 1em !important;
+                    font-size: ${size * 1.2}px !important;
                 }
             `;
         },
         args: [size]
     });
-}
-
-// 检查 AdGuard 状态
-function checkAdGuardStatus() {
-    chrome.runtime.sendMessage({ type: 'checkAdGuardStatus' }, (response) => {
-        const statusElement = document.getElementById('adguard-status');
-        const assistantButton = document.getElementById('open-adguard-assistant');
-        
-        if (response.installed) {
-            statusElement.textContent = `AdGuard 已安装 ${response.status.enabled ? '(已启用)' : '(已禁用)'}`;
-            statusElement.className = 'status-message adguard-status-installed';
-            assistantButton.disabled = !response.status.enabled;
-        } else {
-            statusElement.textContent = 'AdGuard 未安装';
-            statusElement.className = 'status-message adguard-status-not-installed';
-            assistantButton.disabled = true;
-        }
-    });
-}
-
-// 打开 AdGuard 助手
-function openAdGuardAssistant() {
-    if (!currentTab) return;
-    
-    chrome.runtime.sendMessage({ 
-        type: 'openAdGuardAssistant', 
-        tabId: currentTab.id 
-    }, (response) => {
-        if (response && response.success) {
-            console.log('AdGuard 助手已打开');
-        } else {
-            console.error('打开 AdGuard 助手失败');
-        }
-    });
-}
-
-// 绑定 AdGuard 相关事件监听器
-function bindAdGuardEventListeners() {
-    // 打开 AdGuard 助手按钮
-    document.getElementById('open-adguard-assistant').addEventListener('click', openAdGuardAssistant);
-}
-
-// 初始化
-async function init() {
-    // 获取当前标签页
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    currentTab = tabs[0];
-    
-    // 加载用户设置
-    loadSettings();
-    
-    // 绑定事件监听器
-    bindEventListeners();
-    
-    // 绑定 AdGuard 事件监听器
-    bindAdGuardEventListeners();
-    
-    // 检查 AdGuard 状态
-    checkAdGuardStatus();
-    
-    // 检测网站原生主题并同步开关状态
-    detectNativeTheme();
 }
 
 // 智能去水印
@@ -826,6 +795,11 @@ function toggleCleanPage(enabled) {
                     .promotion, .sponsored, .advertisement, .ad, .ads {
                         display: none !important;
                     }
+                    
+                    /* 移除侧边栏和干扰元素 */
+                    .sidebar, .widget, .share, .social, .comment {
+                        display: none !important;
+                    }
                 `;
                 
                 // 移除弹窗脚本
@@ -884,6 +858,35 @@ function toggleForceCopy(enabled) {
                         e.stopPropagation();
                     }
                 }, true);
+                
+                // 添加全局样式允许选择
+                let style = document.getElementById('simple-force-copy-style');
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'simple-force-copy-style';
+                    document.head.appendChild(style);
+                }
+                style.textContent = `
+                    * {
+                        user-select: text !important;
+                        -webkit-user-select: text !important;
+                        -moz-user-select: text !important;
+                        -ms-user-select: text !important;
+                    }
+                    
+                    body {
+                        user-select: text !important;
+                        -webkit-user-select: text !important;
+                        -moz-user-select: text !important;
+                        -ms-user-select: text !important;
+                    }
+                `;
+            } else {
+                // 移除强制复制样式
+                const style = document.getElementById('simple-force-copy-style');
+                if (style) {
+                    style.remove();
+                }
             }
         },
         args: [enabled]
@@ -941,6 +944,26 @@ function toggleVideoEnhance(enabled) {
                         speedControls.appendChild(button);
                     });
                     
+                    // 添加画中画按钮
+                    const pipButton = document.createElement('button');
+                    pipButton.textContent = 'PIP';
+                    pipButton.style.cssText = `
+                        background: transparent;
+                        border: 1px solid white;
+                        color: white;
+                        padding: 2px 6px;
+                        margin: 0 2px;
+                        border-radius: 3px;
+                        cursor: pointer;
+                    `;
+                    pipButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (video.requestPictureInPicture) {
+                            video.requestPictureInPicture();
+                        }
+                    });
+                    speedControls.appendChild(pipButton);
+                    
                     // 将控制添加到视频容器
                     const container = video.parentElement;
                     if (container) {
@@ -948,6 +971,41 @@ function toggleVideoEnhance(enabled) {
                         container.appendChild(speedControls);
                     }
                 });
+                
+                // 添加视频增强样式
+                let style = document.getElementById('simple-video-enhance-style');
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'simple-video-enhance-style';
+                    document.head.appendChild(style);
+                }
+                style.textContent = `
+                    /* 视频容器样式 */
+                    video {
+                        max-width: 100% !important;
+                        height: auto !important;
+                    }
+                    
+                    /* 视频控制样式 */
+                    .video-speed-controls {
+                        opacity: 0.8;
+                        transition: opacity 0.3s ease;
+                    }
+                    
+                    .video-speed-controls:hover {
+                        opacity: 1;
+                    }
+                `;
+            } else {
+                // 移除视频增强样式
+                const style = document.getElementById('simple-video-enhance-style');
+                if (style) {
+                    style.remove();
+                }
+                
+                // 移除视频控制
+                const controls = document.querySelectorAll('.video-speed-controls');
+                controls.forEach(control => control.remove());
             }
         },
         args: [enabled]
@@ -997,7 +1055,7 @@ function toggleSmoothScroll(enabled) {
     });
 }
 
-// 夜间模式增强
+// 深色模式增强
 function toggleEnhancedDark(enabled) {
     if (!currentTab) return;
     
@@ -1096,6 +1154,105 @@ function toggleEnhancedDark(enabled) {
     });
 }
 
+// 清除跟踪参数
+function toggleRemoveTracking(enabled) {
+    if (!currentTab) return;
+    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            if (enabled) {
+                // 清除URL中的跟踪参数
+                const cleanUrl = () => {
+                    const url = new URL(window.location.href);
+                    const params = url.searchParams;
+                    const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid', 'msclkid', 'mc_eid', 'utm_id', 'utm_source_platform', 'utm_creative', 'utm_position', 'utm_target_id', 'utm_matchtype', 'utm_network', 'utm_device', 'utm_placement', 'utm_referrer', 'utm_social_source', 'utm_social_medium', 'utm_social_campaign', 'utm_social_term', 'utm_social_content'];
+                    
+                    trackingParams.forEach(param => {
+                        if (params.has(param)) {
+                            params.delete(param);
+                        }
+                    });
+                    
+                    const newUrl = url.origin + url.pathname + (params.toString() ? '?' + params.toString() : '') + url.hash;
+                    if (newUrl !== window.location.href) {
+                        window.history.replaceState({}, '', newUrl);
+                    }
+                };
+                
+                // 执行一次清理
+                cleanUrl();
+                
+                // 监听URL变化
+                window.addEventListener('popstate', cleanUrl);
+                window.addEventListener('pushstate', cleanUrl);
+                window.addEventListener('replacestate', cleanUrl);
+            }
+        },
+        args: [enabled]
+    });
+}
+
+// 隐藏Cookie提示
+function toggleHideCookie(enabled) {
+    if (!currentTab) return;
+    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            if (enabled) {
+                // 添加隐藏Cookie提示样式
+                let style = document.getElementById('simple-hide-cookie-style');
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'simple-hide-cookie-style';
+                    document.head.appendChild(style);
+                }
+                style.textContent = `
+                    /* 隐藏Cookie提示 */
+                    .cookie-banner, .cookie-consent, .cookie-notice, .consent-banner, .gdpr-banner, .privacy-banner {
+                        display: none !important;
+                        opacity: 0 !important;
+                        visibility: hidden !important;
+                    }
+                `;
+            } else {
+                // 移除隐藏Cookie提示样式
+                const style = document.getElementById('simple-hide-cookie-style');
+                if (style) {
+                    style.remove();
+                }
+            }
+        },
+        args: [enabled]
+    });
+}
+
+// 禁止媒体权限
+function toggleBlockMediaPermission(enabled) {
+    if (!currentTab) return;
+    
+    chrome.scripting.executeScript({
+        target: { tabId: currentTab.id },
+        func: (enabled) => {
+            if (enabled) {
+                // 拦截媒体权限请求
+                const originalGetUserMedia = navigator.mediaDevices.getUserMedia;
+                navigator.mediaDevices.getUserMedia = async (constraints) => {
+                    throw new Error('Media permission blocked by Simple Dark Mode & Reader extension');
+                };
+                
+                // 拦截摄像头和麦克风访问
+                const originalEnumerateDevices = navigator.mediaDevices.enumerateDevices;
+                navigator.mediaDevices.enumerateDevices = async () => {
+                    return [];
+                };
+            }
+        },
+        args: [enabled]
+    });
+}
+
 // 检测网站原生主题并同步开关状态
 function detectNativeTheme() {
     if (!currentTab) return;
@@ -1141,6 +1298,54 @@ function detectNativeTheme() {
             });
         }
     });
+}
+
+// 检查 AdGuard 状态
+function checkAdGuardStatus() {
+    // 模拟AdGuard状态检测
+    const adguardStatus = document.getElementById('adguard-status');
+    const adguardButton = document.getElementById('open-adguard-assistant');
+    
+    adguardStatus.className = 'adguard-status adguard-status-not-installed';
+    adguardStatus.innerHTML = `
+        <span class="status-label">状态:</span>
+        <span class="status-text">未安装</span>
+    `;
+    adguardButton.disabled = true;
+}
+
+// 打开 AdGuard 助手
+function openAdGuardAssistant() {
+    // 模拟打开AdGuard助手
+    alert('AdGuard 助手功能未实现');
+}
+
+// 绑定 AdGuard 相关事件监听器
+function bindAdGuardEventListeners() {
+    // 打开 AdGuard 助手按钮
+    document.getElementById('open-adguard-assistant').addEventListener('click', openAdGuardAssistant);
+}
+
+// 初始化
+async function init() {
+    // 获取当前标签页
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    currentTab = tabs[0];
+    
+    // 加载用户设置
+    loadSettings();
+    
+    // 绑定事件监听器
+    bindEventListeners();
+    
+    // 绑定 AdGuard 事件监听器
+    bindAdGuardEventListeners();
+    
+    // 检查 AdGuard 状态
+    checkAdGuardStatus();
+    
+    // 检测网站原生主题并同步开关状态
+    detectNativeTheme();
 }
 
 // 调用初始化函数

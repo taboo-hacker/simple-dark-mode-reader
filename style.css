@@ -103,6 +103,7 @@ body {
     font-size: 14px;
     color: var(--text-primary);
     transition: var(--transition);
+    flex: 1;
 }
 
 .option-label:hover {
@@ -263,8 +264,8 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 /* 功能按钮样式 */
-.whitelist-button,
-.reset-button {
+.action-button,
+.adguard-button {
     padding: 6px 12px;
     border: 1px solid var(--primary-color);
     border-radius: var(--border-radius);
@@ -273,64 +274,29 @@ input[type="range"]::-moz-range-thumb:hover {
     font-size: 14px;
     cursor: pointer;
     transition: var(--transition);
+    min-width: 60px;
 }
 
-.whitelist-button:hover,
-.reset-button:hover {
+.action-button:hover,
+.adguard-button:hover:not(:disabled) {
     background-color: var(--primary-color);
     color: white;
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.whitelist-button:active,
-.reset-button:active {
+.action-button:active,
+.adguard-button:active {
     transform: translateY(0);
 }
 
-/* 高级功能网格布局 */
-.advanced-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-
-.advanced-item {
-    background-color: #f9f9f9;
-    border-radius: var(--border-radius);
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: var(--transition);
-    border: 1px solid var(--border-color);
-}
-
-.advanced-item:hover {
-    background-color: #f0f7ff;
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-}
-
-.advanced-icon {
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.advanced-content {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.advanced-label {
-    font-size: 12px;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-    font-weight: 500;
+.adguard-button:disabled {
+    background-color: #e0e0e0;
+    color: var(--text-light);
+    cursor: not-allowed;
+    border-color: #e0e0e0;
+    transform: none;
+    box-shadow: none;
 }
 
 /* AdGuard 集成样式 */
@@ -362,34 +328,6 @@ input[type="range"]::-moz-range-thumb:hover {
     font-weight: 500;
 }
 
-.adguard-button {
-    width: 100%;
-    padding: 10px 16px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: var(--transition);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.adguard-button:hover:not(:disabled) {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-}
-
-.adguard-button:disabled {
-    background-color: #e0e0e0;
-    color: var(--text-light);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
 .adguard-status-installed .status-text {
     color: var(--success-color);
 }
@@ -406,10 +344,6 @@ input[type="range"]::-moz-range-thumb:hover {
     
     .container {
         padding: 16px;
-    }
-    
-    .advanced-grid {
-        grid-template-columns: repeat(2, 1fr);
     }
     
     .option {
@@ -444,26 +378,26 @@ input[type="range"]::-moz-range-thumb:hover {
     animation: fadeIn 0.3s ease-out;
 }
 
-.advanced-item {
+.section {
     animation: fadeIn 0.4s ease-out;
 }
 
-.advanced-item:nth-child(2) {
+.section:nth-child(2) {
     animation-delay: 0.1s;
 }
 
-.advanced-item:nth-child(3) {
+.section:nth-child(3) {
     animation-delay: 0.2s;
 }
 
-.advanced-item:nth-child(4) {
+.section:nth-child(4) {
     animation-delay: 0.3s;
 }
 
-.advanced-item:nth-child(5) {
+.section:nth-child(5) {
     animation-delay: 0.4s;
 }
 
-.advanced-item:nth-child(6) {
+.section:nth-child(6) {
     animation-delay: 0.5s;
 }

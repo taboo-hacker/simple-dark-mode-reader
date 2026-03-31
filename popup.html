@@ -12,9 +12,9 @@
             <h1>Simple Dark Mode & Reader</h1>
         </header>
         
-        <!-- 基础功能区 -->
-        <section class="section basic-section">
-            <h2 class="section-title">基础功能</h2>
+        <!-- 深色模式模块 -->
+        <section class="section dark-mode-section">
+            <h2 class="section-title">深色模式</h2>
             
             <!-- 深色模式开关 -->
             <div class="option">
@@ -41,13 +41,25 @@
                 </select>
             </div>
             
+            <!-- 深色模式增强 -->
+            <div class="option">
+                <label for="enhanced-dark" class="option-label">
+                    <span class="option-icon">✨</span>
+                    <span class="option-text">深色模式增强</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="enhanced-dark">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
             <!-- 网站白名单 -->
             <div class="option">
                 <label for="add-whitelist" class="option-label">
                     <span class="option-icon">📋</span>
                     <span class="option-text">添加到白名单</span>
                 </label>
-                <button id="add-whitelist" class="whitelist-button">
+                <button id="add-whitelist" class="action-button">
                     添加
                 </button>
             </div>
@@ -58,10 +70,15 @@
                     <span class="option-icon">↺</span>
                     <span class="option-text">一键还原</span>
                 </label>
-                <button id="reset-styles" class="reset-button">
+                <button id="reset-styles" class="action-button">
                     还原
                 </button>
             </div>
+        </section>
+        
+        <!-- 阅读增强模块 -->
+        <section class="section reading-section">
+            <h2 class="section-title">阅读增强</h2>
             
             <!-- 阅读模式开关 -->
             <div class="option">
@@ -83,90 +100,117 @@
                 </label>
                 <input type="range" id="font-size" min="12" max="24" value="16">
             </div>
+            
+            <!-- 强制复制 -->
+            <div class="option">
+                <label for="force-copy" class="option-label">
+                    <span class="option-icon">📋</span>
+                    <span class="option-text">强制复制</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="force-copy">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <!-- 滚动平滑 -->
+            <div class="option">
+                <label for="smooth-scroll" class="option-label">
+                    <span class="option-icon">📜</span>
+                    <span class="option-text">滚动平滑</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="smooth-scroll">
+                    <span class="slider round"></span>
+                </label>
+            </div>
         </section>
         
-        <!-- 高级功能区 -->
-        <section class="section advanced-section">
-            <h2 class="section-title">高级功能</h2>
+        <!-- 隐私净化模块 -->
+        <section class="section privacy-section">
+            <h2 class="section-title">隐私净化</h2>
             
-            <div class="advanced-grid">
-                <!-- 智能去水印 -->
-                <div class="advanced-item">
-                    <div class="advanced-icon">🖼️</div>
-                    <div class="advanced-content">
-                        <label for="remove-watermark" class="advanced-label">智能去水印</label>
-                        <label class="switch">
-                            <input type="checkbox" id="remove-watermark">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- 网页净化 -->
-                <div class="advanced-item">
-                    <div class="advanced-icon">🧹</div>
-                    <div class="advanced-content">
-                        <label for="clean-page" class="advanced-label">网页净化</label>
-                        <label class="switch">
-                            <input type="checkbox" id="clean-page">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- 强制复制 -->
-                <div class="advanced-item">
-                    <div class="advanced-icon">📋</div>
-                    <div class="advanced-content">
-                        <label for="force-copy" class="advanced-label">强制复制</label>
-                        <label class="switch">
-                            <input type="checkbox" id="force-copy">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- 视频增强 -->
-                <div class="advanced-item">
-                    <div class="advanced-icon">🎬</div>
-                    <div class="advanced-content">
-                        <label for="video-enhance" class="advanced-label">视频增强</label>
-                        <label class="switch">
-                            <input type="checkbox" id="video-enhance">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- 滚动平滑 -->
-                <div class="advanced-item">
-                    <div class="advanced-icon">📜</div>
-                    <div class="advanced-content">
-                        <label for="smooth-scroll" class="advanced-label">滚动平滑</label>
-                        <label class="switch">
-                            <input type="checkbox" id="smooth-scroll">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- 深色模式增强 -->
-                <div class="advanced-item">
-                    <div class="advanced-icon">✨</div>
-                    <div class="advanced-content">
-                        <label for="enhanced-dark" class="advanced-label">深色模式增强</label>
-                        <label class="switch">
-                            <input type="checkbox" id="enhanced-dark">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
+            <!-- 清除跟踪参数 -->
+            <div class="option">
+                <label for="remove-tracking" class="option-label">
+                    <span class="option-icon">🔒</span>
+                    <span class="option-text">清除跟踪参数</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="remove-tracking">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <!-- 隐藏Cookie提示 -->
+            <div class="option">
+                <label for="hide-cookie" class="option-label">
+                    <span class="option-icon">🍪</span>
+                    <span class="option-text">隐藏Cookie提示</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="hide-cookie">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <!-- 禁止媒体权限 -->
+            <div class="option">
+                <label for="block-media-permission" class="option-label">
+                    <span class="option-icon">🎥</span>
+                    <span class="option-text">禁止媒体权限</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="block-media-permission">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <!-- 智能去水印 -->
+            <div class="option">
+                <label for="remove-watermark" class="option-label">
+                    <span class="option-icon">🖼️</span>
+                    <span class="option-text">智能去水印</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="remove-watermark">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <!-- 网页净化 -->
+            <div class="option">
+                <label for="clean-page" class="option-label">
+                    <span class="option-icon">🧹</span>
+                    <span class="option-text">网页净化</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="clean-page">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </section>
+        
+        <!-- 视频工具模块 -->
+        <section class="section video-section">
+            <h2 class="section-title">视频工具</h2>
+            
+            <!-- 视频增强 -->
+            <div class="option">
+                <label for="video-enhance" class="option-label">
+                    <span class="option-icon">🎬</span>
+                    <span class="option-text">视频增强</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="video-enhance">
+                    <span class="slider round"></span>
+                </label>
             </div>
         </section>
         
         <!-- AdGuard 集成区 -->
         <section class="section adguard-section">
-            <h2 class="section-title">AdGuard 集成</h2>
+            <h2 class="section-title">AdGuard 集成（未实现）</h2>
             
             <div class="adguard-content">
                 <div id="adguard-status" class="adguard-status">
