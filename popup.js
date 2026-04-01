@@ -353,7 +353,7 @@ function resetStyles() {
     chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
         func: () => {
-            document.querySelectorAll('[id^="simple-"]').forEach(el => el.remove());
+            document.querySelectorAll('[id^="simple-"], [id*="-dark"], [id*="-reader"], [id*="-eye"], [id*="-text"], [id*="-copy"], [id*="-hide"], [id*="-clean"], [id*="-block"]').forEach(el => el.remove());
             location.reload();
         }
     }, () => {
@@ -454,18 +454,9 @@ function takeFullScreenshot() {
 function detectNativeTheme() {
     if (!currentTab) return;
     
-    chrome.scripting.executeScript({
-        target: { tabId: currentTab.id },
-        func: () => {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const hasNativeDark = document.documentElement.classList.contains('dark') || 
-                               document.body.classList.contains('dark') ||
-                               getComputedStyle(document.body).backgroundColor.includes('18, 18, 18');
-            return { prefersDark, hasNativeDark };
-        }
-    }, (results) => {
-        if (results?.[0]?.result) {
-            const { prefersDark, hasNativeDark } = results[0].result;
+    chrome.tabs.sendMessage(currentTab.id, { action: 'detectNativeTheme' }, (response) => {
+        if (response) {
+            const { prefersDark, hasNativeDark } = response;
             const isDark = prefersDark || hasNativeDark;
             document.getElementById('dark-mode').checked = isDark;
             saveSiteSetting('darkMode', isDark);

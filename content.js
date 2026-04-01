@@ -28,7 +28,8 @@
             'forceCopy', 'videoEnhance', 'smoothScroll', 'enhancedDark', 'darkModeLevel',
             'removeTracking', 'hideCookie', 'blockMediaPermission', 'antiFingerprint',
             'eyeCare', 'autoScroll', 'videoSpeed', 'skipAds', 'preventPause',
-            'blockPopups', 'blockRefresh', 'blockGif', 'cleanPage', 'userAgent'
+            'blockPopups', 'blockRefresh', 'blockGif', 'cleanPage', 'userAgent',
+            'whitelist', 'siteSettings'
         ];
         
         chrome.storage.local.get(allSettings, (result) => {
@@ -40,9 +41,32 @@
             console.log('Simple Dark Mode & Reader: 恢复功能状态', result);
             currentSettings = result;
             
+            // 检查是否在白名单中
+            const domain = getCurrentDomain();
+            if (result.whitelist && result.whitelist.includes(domain)) {
+                console.log('Simple Dark Mode & Reader: 网站在白名单中，跳过功能应用');
+                return;
+            }
+            
+            // 应用网站特定设置或全局设置
+            const siteSettings = result.siteSettings?.[domain] || {};
+            const effectiveSettings = {
+                ...result,
+                ...siteSettings
+            };
+            
             // 立即应用所有功能
-            applyAllSettings(result);
+            applyAllSettings(effectiveSettings);
         });
+    }
+    
+    // 获取当前域名
+    function getCurrentDomain() {
+        try {
+            return new URL(window.location.href).hostname;
+        } catch (e) {
+            return '';
+        }
     }
     
     // 应用所有设置
@@ -663,7 +687,7 @@
         if (debounceTimer) {
             clearTimeout(debounceTimer);
         }
-        debounceTimer = setTimeout(initialize, 300);
+        debounceTimer = setTimeout(initialize, 200);
     }
     
     // 监听来自 popup 的消息
@@ -690,6 +714,13 @@
                     // 设置变化，重新应用
                     initialize();
                     break;
+                case 'detectNativeTheme':
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    const hasNativeDark = document.documentElement.classList.contains('dark') || 
+                                       document.body.classList.contains('dark') ||
+                                       getComputedStyle(document.body).backgroundColor.includes('18, 18, 18');
+                    sendResponse({ prefersDark, hasNativeDark });
+                    break;
             }
         } catch (error) {
             console.error('Simple Dark Mode & Reader: 处理消息时出错', error);
@@ -712,7 +743,7 @@
         setTimeout(() => {
             console.log('Simple Dark Mode & Reader: 页面已加载，重新应用设置');
             initialize();
-        }, 1000);
+        }, 500);
     }
     
     // 监听页面变化（SPA应用）

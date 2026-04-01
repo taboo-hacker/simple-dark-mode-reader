@@ -70,6 +70,21 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     }
 });
 
+// 监听标签页激活事件
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    console.log('Simple Dark Mode & Reader: 标签页激活', activeInfo.tabId);
+    
+    // 向 content script 发送消息，重新应用设置
+    chrome.tabs.sendMessage(activeInfo.tabId, { action: 'reapplySettings' }, (response) => {
+        if (chrome.runtime.lastError) {
+            // content script 可能还没有加载，忽略错误
+            console.log('Simple Dark Mode & Reader: content script 尚未加载');
+        } else {
+            console.log('Simple Dark Mode & Reader: 设置已重新应用');
+        }
+    });
+});
+
 // 监听来自 content script 或 popup 的消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch(request.action) {

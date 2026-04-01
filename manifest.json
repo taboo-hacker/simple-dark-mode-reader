@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Simple Dark Mode & Reader",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "智能深色模式、阅读净化、视频增强、隐私安全、实用工具一体化浏览器扩展",
   "icons": {
     "16": "icons/icon16.png",
@@ -20,8 +20,8 @@
     "activeTab",
     "scripting",
     "storage",
-    "tabs",
-    "clipboardWrite"
+    "management",
+    "tabs"
   ],
   "host_permissions": [
     "<all_urls>"
