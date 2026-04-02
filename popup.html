@@ -3,386 +3,456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Dark Mode & Reader</title>
+    <title>AdGuard Dev Tool</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>Simple Dark Mode & Reader</h1>
-        </header>
-        
-        <!-- 深色模式模块 -->
-        <section class="section dark-mode-section">
-            <h2 class="section-title">🌙 深色模式</h2>
-            
-            <div class="option">
-                <label for="dark-mode" class="option-label">
-                    <span class="option-icon">🌙</span>
-                    <span class="option-text">深色模式</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="dark-mode">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option dark-mode-level">
-                <label class="option-label">
-                    <span class="option-icon">🎨</span>
-                    <span class="option-text">模式档位</span>
-                </label>
-                <select id="dark-mode-level" class="dark-level-select">
-                    <option value="standard">标准深色</option>
-                    <option value="pure-black">纯黑护眼</option>
-                    <option value="soft">柔和深色</option>
-                </select>
-            </div>
-            
-            <div class="option">
-                <label for="enhanced-dark" class="option-label">
-                    <span class="option-icon">✨</span>
-                    <span class="option-text">深色增强</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="enhanced-dark">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="eye-care" class="option-label">
-                    <span class="option-icon">👁️</span>
-                    <span class="option-text">护眼黄底</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="eye-care">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="add-whitelist" class="option-label">
-                    <span class="option-icon">📋</span>
-                    <span class="option-text">添加到白名单</span>
-                </label>
-                <button id="add-whitelist" class="action-button">添加</button>
-            </div>
-            
-            <div class="option">
-                <label for="reset-styles" class="option-label">
-                    <span class="option-icon">↺</span>
-                    <span class="option-text">一键还原</span>
-                </label>
-                <button id="reset-styles" class="action-button">还原</button>
-            </div>
-        </section>
-        
-        <!-- 阅读净化模块 -->
-        <section class="section reading-section">
-            <h2 class="section-title">📖 阅读净化</h2>
-            
-            <div class="option">
-                <label for="reader-mode" class="option-label">
-                    <span class="option-icon">📖</span>
-                    <span class="option-text">专注阅读</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="reader-mode">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="auto-scroll" class="option-label">
-                    <span class="option-icon">📜</span>
-                    <span class="option-text">自动滚屏</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="auto-scroll">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="smooth-scroll" class="option-label">
-                    <span class="option-icon">🔄</span>
-                    <span class="option-text">平滑滚动</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="smooth-scroll">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option font-size-option">
-                <label for="font-size" class="option-label">
-                    <span class="option-icon">📝</span>
-                    <span class="option-text">字体: <span id="font-size-value">16</span>px</span>
-                </label>
-                <input type="range" id="font-size" min="12" max="24" value="16">
-            </div>
-            
-            <div class="option">
-                <label for="line-height" class="option-label">
-                    <span class="option-icon">↕️</span>
-                    <span class="option-text">行距: <span id="line-height-value">1.6</span></span>
-                </label>
-                <input type="range" id="line-height" min="1.2" max="2.0" step="0.1" value="1.6">
-            </div>
-            
-            <div class="option">
-                <label for="word-spacing" class="option-label">
-                    <span class="option-icon">↔️</span>
-                    <span class="option-text">间距: <span id="word-spacing-value">0</span>px</span>
-                </label>
-                <input type="range" id="word-spacing" min="0" max="5" step="0.5" value="0">
-            </div>
-            
-            <div class="option">
-                <label for="force-copy" class="option-label">
-                    <span class="option-icon">📋</span>
-                    <span class="option-text">解除复制限制</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="force-copy">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="copy-content" class="option-label">
-                    <span class="option-icon">📄</span>
-                    <span class="option-text">复制正文</span>
-                </label>
-                <button id="copy-content" class="action-button">复制</button>
-            </div>
-            
-            <div class="option">
-                <label for="copy-links" class="option-label">
-                    <span class="option-icon">🔗</span>
-                    <span class="option-text">复制所有链接</span>
-                </label>
-                <button id="copy-links" class="action-button">复制</button>
-            </div>
-        </section>
-        
-        <!-- 视频工具模块 -->
-        <section class="section video-section">
-            <h2 class="section-title">🎬 视频工具</h2>
-            
-            <div class="option">
-                <label for="video-enhance" class="option-label">
-                    <span class="option-icon">🎬</span>
-                    <span class="option-text">视频增强</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="video-enhance">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="video-speed" class="option-label">
-                    <span class="option-icon">⚡</span>
-                    <span class="option-text">倍速: <span id="video-speed-value">1.0</span>x</span>
-                </label>
-                <input type="range" id="video-speed" min="0.25" max="4.0" step="0.25" value="1.0">
-            </div>
-            
-            <div class="option">
-                <label for="skip-ads" class="option-label">
-                    <span class="option-icon">⏭️</span>
-                    <span class="option-text">跳过片头广告</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="skip-ads">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="prevent-pause" class="option-label">
-                    <span class="option-icon">▶️</span>
-                    <span class="option-text">禁止自动暂停</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="prevent-pause">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="pip-mode" class="option-label">
-                    <span class="option-icon">🖼️</span>
-                    <span class="option-text">画中画</span>
-                </label>
-                <button id="pip-mode" class="action-button">开启</button>
-            </div>
-            
-            <div class="option">
-                <label for="web-fullscreen" class="option-label">
-                    <span class="option-icon">🔲</span>
-                    <span class="option-text">网页全屏</span>
-                </label>
-                <button id="web-fullscreen" class="action-button">全屏</button>
-            </div>
-        </section>
-        
-        <!-- 隐私安全模块 -->
-        <section class="section privacy-section">
-            <h2 class="section-title">🔒 隐私安全</h2>
-            
-            <div class="option">
-                <label for="remove-tracking" class="option-label">
-                    <span class="option-icon">🛡️</span>
-                    <span class="option-text">清除跟踪参数</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="remove-tracking">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="hide-cookie" class="option-label">
-                    <span class="option-icon">🍪</span>
-                    <span class="option-text">隐藏Cookie提示</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="hide-cookie">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="block-media-permission" class="option-label">
-                    <span class="option-icon">🎥</span>
-                    <span class="option-text">禁止媒体权限</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="block-media-permission">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="anti-fingerprint" class="option-label">
-                    <span class="option-icon">🕵️</span>
-                    <span class="option-text">防指纹追踪</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="anti-fingerprint">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-        </section>
-        
-        <!-- 实用工具模块 -->
-        <section class="section tools-section">
-            <h2 class="section-title">🛠️ 实用工具</h2>
-            
-            <div class="option">
-                <label for="clean-page" class="option-label">
-                    <span class="option-icon">🧹</span>
-                    <span class="option-text">页面净化</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="clean-page">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="block-popups" class="option-label">
-                    <span class="option-icon">🚫</span>
-                    <span class="option-text">屏蔽弹窗</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="block-popups">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="block-refresh" class="option-label">
-                    <span class="option-icon">🔄</span>
-                    <span class="option-text">禁止自动刷新</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="block-refresh">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="block-gif" class="option-label">
-                    <span class="option-icon">🎭</span>
-                    <span class="option-text">关闭GIF动画</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="block-gif">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            
-            <div class="option">
-                <label for="pdf-export" class="option-label">
-                    <span class="option-icon">📄</span>
-                    <span class="option-text">导出PDF</span>
-                </label>
-                <button id="pdf-export" class="action-button">导出</button>
-            </div>
-            
-            <div class="option">
-                <label for="full-screenshot" class="option-label">
-                    <span class="option-icon">📷</span>
-                    <span class="option-text">长截图</span>
-                </label>
-                <button id="full-screenshot" class="action-button">截图</button>
-            </div>
-            
-            <div class="option">
-                <label for="auto-refresh" class="option-label">
-                    <span class="option-icon">⏰</span>
-                    <span class="option-text">定时刷新</span>
-                </label>
-                <select id="auto-refresh" class="dark-level-select">
-                    <option value="0">关闭</option>
-                    <option value="30">30秒</option>
-                    <option value="60">1分钟</option>
-                    <option value="300">5分钟</option>
-                    <option value="600">10分钟</option>
-                </select>
-            </div>
-            
-            <div class="option">
-                <label for="user-agent" class="option-label">
-                    <span class="option-icon">📱</span>
-                    <span class="option-text">切换UA</span>
-                </label>
-                <select id="user-agent" class="dark-level-select">
-                    <option value="default">默认</option>
-                    <option value="mobile">手机</option>
-                    <option value="desktop">电脑</option>
-                </select>
-            </div>
-        </section>
-        
-        <!-- AdGuard 集成区 -->
-        <section class="section adguard-section">
-            <h2 class="section-title">🛡️ AdGuard 集成（未实现）</h2>
-            
-            <div class="adguard-content">
-                <div id="adguard-status" class="adguard-status">
-                    <span class="status-label">状态:</span>
-                    <span class="status-text">检测中...</span>
+    <div class="popup-container">
+        <!-- 左侧导航栏 -->
+        <nav class="sidebar-nav">
+            <div class="nav-header">
+                <div class="nav-logo">
+                    <span class="logo-icon">🛡️</span>
+                    <span class="logo-text">AdGuard Dev</span>
                 </div>
-                <button id="open-adguard-assistant" class="adguard-button" disabled>
-                    打开 AdGuard 助手
-                </button>
             </div>
-        </section>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-section="dark-mode">
+                    <span class="nav-icon">🌙</span>
+                    <span class="nav-text">深色模式</span>
+                </li>
+                <li class="nav-item" data-section="reading">
+                    <span class="nav-icon">📖</span>
+                    <span class="nav-text">阅读净化</span>
+                </li>
+                <li class="nav-item" data-section="video">
+                    <span class="nav-icon">🎬</span>
+                    <span class="nav-text">视频工具</span>
+                </li>
+                <li class="nav-item" data-section="privacy">
+                    <span class="nav-icon">🔒</span>
+                    <span class="nav-text">隐私安全</span>
+                </li>
+                <li class="nav-item" data-section="tools">
+                    <span class="nav-icon">🛠️</span>
+                    <span class="nav-text">实用工具</span>
+                </li>
+                <li class="nav-item" data-section="adguard">
+                    <span class="nav-icon">🛡️</span>
+                    <span class="nav-text">AdGuard 集成</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 右侧内容区 -->
+        <main class="content-area">
+            <!-- 深色模式 -->
+            <section id="dark-mode" class="content-section active">
+                <h2 class="section-title">深色模式</h2>
+                <div class="section-description">自定义网页的深色模式显示效果</div>
+                
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">深色模式</div>
+                            <div class="setting-desc">为当前网页启用深色模式</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="dark-mode-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">模式档位</div>
+                            <div class="setting-desc">选择深色模式的强度</div>
+                        </div>
+                        <select id="dark-mode-level" class="setting-select">
+                            <option value="standard">标准深色</option>
+                            <option value="pure-black">纯黑护眼</option>
+                            <option value="soft">柔和深色</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">深色增强</div>
+                            <div class="setting-desc">增强深色模式的对比度和亮度</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="enhanced-dark-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">护眼黄底</div>
+                            <div class="setting-desc">使用暖黄色背景保护眼睛</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="eye-care-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="setting-card">
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <div class="setting-name">添加到白名单</div>
+                            <div class="setting-desc">当前网站将不使用深色模式</div>
+                        </div>
+                        <button id="add-whitelist-btn" class="action-btn">添加</button>
+                    </div>
+                    
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <div class="setting-name">一键还原</div>
+                            <div class="setting-desc">清除所有样式并刷新页面</div>
+                        </div>
+                        <button id="reset-styles-btn" class="action-btn danger">还原</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 阅读净化 -->
+            <section id="reading" class="content-section">
+                <h2 class="section-title">阅读净化</h2>
+                <div class="section-description">优化网页阅读体验，去除干扰元素</div>
+                
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">专注阅读</div>
+                            <div class="setting-desc">隐藏广告、侧边栏等干扰元素</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="reader-mode-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">自动滚屏</div>
+                            <div class="setting-desc">页面自动向下滚动</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="auto-scroll-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">平滑滚动</div>
+                            <div class="setting-desc">启用平滑滚动效果</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="smooth-scroll-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">解除复制限制</div>
+                            <div class="setting-desc">允许复制受保护的内容</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="force-copy-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="setting-card">
+                    <h3 class="card-title">文本样式</h3>
+                    
+                    <div class="setting-item slider-item">
+                        <div class="setting-info">
+                            <div class="setting-name">字体大小</div>
+                            <div class="setting-value" id="font-size-display">16px</div>
+                        </div>
+                        <input type="range" id="font-size-slider" class="setting-slider" min="12" max="24" value="16">
+                    </div>
+                    
+                    <div class="setting-item slider-item">
+                        <div class="setting-info">
+                            <div class="setting-name">行距</div>
+                            <div class="setting-value" id="line-height-display">1.6</div>
+                        </div>
+                        <input type="range" id="line-height-slider" class="setting-slider" min="1.2" max="2.0" step="0.1" value="1.6">
+                    </div>
+                    
+                    <div class="setting-item slider-item">
+                        <div class="setting-info">
+                            <div class="setting-name">字间距</div>
+                            <div class="setting-value" id="word-spacing-display">0px</div>
+                        </div>
+                        <input type="range" id="word-spacing-slider" class="setting-slider" min="0" max="5" step="0.5" value="0">
+                    </div>
+                </div>
+                
+                <div class="setting-card">
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <div class="setting-name">复制正文</div>
+                            <div class="setting-desc">复制页面主要内容到剪贴板</div>
+                        </div>
+                        <button id="copy-content-btn" class="action-btn">复制</button>
+                    </div>
+                    
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <div class="setting-name">复制所有链接</div>
+                            <div class="setting-desc">复制页面所有链接地址</div>
+                        </div>
+                        <button id="copy-links-btn" class="action-btn">复制</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 视频工具 -->
+            <section id="video" class="content-section">
+                <h2 class="section-title">视频工具</h2>
+                <div class="section-description">增强视频播放体验</div>
+                
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">视频增强</div>
+                            <div class="setting-desc">强制显示视频控制栏</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="video-enhance-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item slider-item">
+                        <div class="setting-info">
+                            <div class="setting-name">播放倍速</div>
+                            <div class="setting-value" id="video-speed-display">1.0x</div>
+                        </div>
+                        <input type="range" id="video-speed-slider" class="setting-slider" min="0.25" max="4.0" step="0.25" value="1.0">
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">跳过片头广告</div>
+                            <div class="setting-desc">自动跳过视频开头广告</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="skip-ads-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">禁止自动暂停</div>
+                            <div class="setting-desc">防止视频被自动暂停</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="prevent-pause-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="setting-card">
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <div class="setting-name">画中画</div>
+                            <div class="setting-desc">将视频切换到画中画模式</div>
+                        </div>
+                        <button id="pip-mode-btn" class="action-btn">开启</button>
+                    </div>
+                    
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <div class="setting-name">网页全屏</div>
+                            <div class="setting-desc">将视频切换到全屏模式</div>
+                        </div>
+                        <button id="web-fullscreen-btn" class="action-btn">全屏</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 隐私安全 -->
+            <section id="privacy" class="content-section">
+                <h2 class="section-title">隐私安全</h2>
+                <div class="section-description">保护您的隐私和浏览安全</div>
+                
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">清除跟踪参数</div>
+                            <div class="setting-desc">自动移除URL中的跟踪参数</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="remove-tracking-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">隐藏Cookie提示</div>
+                            <div class="setting-desc">隐藏烦人的Cookie同意弹窗</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="hide-cookie-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">禁止媒体权限</div>
+                            <div class="setting-desc">阻止网站请求摄像头和麦克风</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="block-media-permission-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">防指纹追踪</div>
+                            <div class="setting-desc">伪装浏览器指纹信息</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="anti-fingerprint-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 实用工具 -->
+            <section id="tools" class="content-section">
+                <h2 class="section-title">实用工具</h2>
+                <div class="section-description">实用的网页辅助功能</div>
+                
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">页面净化</div>
+                            <div class="setting-desc">移除页面中的广告和弹窗</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="clean-page-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">屏蔽弹窗</div>
+                            <div class="setting-desc">阻止自动弹出的窗口</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="block-popups-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">禁止自动刷新</div>
+                            <div class="setting-desc">阻止页面自动刷新</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="block-refresh-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">关闭GIF动画</div>
+                            <div class="setting-desc">停止GIF图片的自动播放</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="block-gif-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">定时刷新</div>
+                            <div class="setting-desc">按设定时间自动刷新页面</div>
+                        </div>
+                        <select id="auto-refresh-select" class="setting-select">
+                            <option value="0">关闭</option>
+                            <option value="30">30秒</option>
+                            <option value="60">1分钟</option>
+                            <option value="300">5分钟</option>
+                            <option value="600">10分钟</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">切换UA</div>
+                            <div class="setting-desc">模拟不同的浏览器标识</div>
+                        </div>
+                        <select id="user-agent-select" class="setting-select">
+                            <option value="default">默认</option>
+                            <option value="mobile">手机</option>
+                            <option value="desktop">电脑</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="setting-card">
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <div class="setting-name">导出PDF</div>
+                            <div class="setting-desc">将当前页面导出为PDF</div>
+                        </div>
+                        <button id="export-pdf-btn" class="action-btn">导出</button>
+                    </div>
+                    
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <div class="setting-name">长截图</div>
+                            <div class="setting-desc">截取整个页面的截图</div>
+                        </div>
+                        <button id="screenshot-btn" class="action-btn">截图</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AdGuard 集成 -->
+            <section id="adguard" class="content-section">
+                <h2 class="section-title">AdGuard 集成</h2>
+                <div class="section-description">与AdGuard广告拦截器集成</div>
+                
+                <div class="setting-card">
+                    <div class="adguard-status-box">
+                        <div class="status-icon">🛡️</div>
+                        <div class="status-info">
+                            <div class="status-title">AdGuard 集成</div>
+                            <div class="status-desc">功能未实现</div>
+                        </div>
+                        <span class="status-badge">未实现</span>
+                    </div>
+                    <div class="adguard-message">
+                        <p>此功能需要安装 AdGuard 浏览器扩展才能使用。</p>
+                        <p>安装后可以在当前页面直接调用 AdGuard 的过滤规则。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
     <script src="popup.js"></script>
 </body>

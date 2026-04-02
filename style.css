@@ -1,389 +1,163 @@
-/* 全局样式 */
+/* ============================================
+   AdGuard Dev Tool - Popup Styles
+   Microsoft Edge Settings Page Style
+   ============================================ */
+
+/* CSS Variables */
+:root {
+    --primary-color: #0078d4;
+    --primary-hover: #006cbd;
+    --primary-light: #e5f1fb;
+    --bg-primary: #f3f2f1;
+    --bg-secondary: #ffffff;
+    --bg-hover: #f0f0f0;
+    --bg-active: #e5e5e5;
+    --text-primary: #323130;
+    --text-secondary: #605e5c;
+    --text-muted: #a19f9d;
+    --border-color: #e1dfdd;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --sidebar-width: 220px;
+    --transition: all 0.2s ease;
+}
+
+/* Reset & Base */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-:root {
-    --primary-color: #2196F3;
-    --primary-hover: #1976D2;
-    --success-color: #4CAF50;
-    --success-hover: #45a049;
-    --error-color: #f44336;
-    --error-hover: #d32f2f;
-    --text-primary: #333333;
-    --text-secondary: #666666;
-    --text-light: #999999;
-    --background: #f5f7fa;
-    --card-bg: #ffffff;
-    --border-color: #e8e8e8;
-    --border-radius: 10px;
-    --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 body {
-    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background-color: var(--background);
-    color: var(--text-primary);
-    min-width: 360px;
-    max-width: 420px;
-    padding: 16px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    font-size: 14px;
     line-height: 1.5;
-}
-
-.container {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    padding: 20px;
-    overflow: hidden;
-}
-
-/* 头部样式 */
-.header {
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid var(--border-color);
-}
-
-.header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin: 0;
-    letter-spacing: -0.5px;
-}
-
-/* 分区样式 */
-.section {
-    margin-bottom: 20px;
-    padding: 16px;
-    background: #fafbfc;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-    transition: var(--transition);
-}
-
-.section:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
-
-.section:last-child {
-    margin-bottom: 0;
-}
-
-.section-title {
-    font-size: 15px;
-    font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 14px;
+    background: var(--bg-primary);
+    overflow: hidden;
+    width: 600px;
+    height: 500px;
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================================
+   Popup Container
+   ============================================ */
+.popup-container {
     display: flex;
-    align-items: center;
-    padding-bottom: 10px;
+    width: 600px;
+    height: 500px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   Sidebar Navigation
+   ============================================ */
+.sidebar-nav {
+    width: var(--sidebar-width);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.nav-header {
+    padding: 20px 16px;
     border-bottom: 1px solid var(--border-color);
 }
 
-/* 选项样式 */
-.option {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    padding: 8px 0;
-    min-height: 40px;
-}
-
-.option:last-child {
-    margin-bottom: 0;
-}
-
-.option-label {
+.nav-logo {
     display: flex;
     align-items: center;
-    cursor: pointer;
-    font-size: 14px;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 24px;
+}
+
+.logo-text {
+    font-size: 16px;
+    font-weight: 600;
     color: var(--text-primary);
-    transition: var(--transition);
+}
+
+.nav-menu {
+    list-style: none;
+    padding: 8px 0;
     flex: 1;
+    overflow-y: auto;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin: 2px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
     user-select: none;
 }
 
-.option-label:hover {
+.nav-item:hover {
+    background: var(--bg-hover);
+}
+
+.nav-item.active {
+    background: var(--primary-light);
     color: var(--primary-color);
 }
 
-.option-icon {
-    font-size: 18px;
-    margin-right: 10px;
-    width: 24px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.option-text {
-    flex: 1;
-    font-weight: 500;
-}
-
-/* 字体大小和行距选项 */
-.font-size-option,
-.line-height-option,
-.word-spacing-option {
-    align-items: center;
-}
-
-.font-size-option .option-label,
-.line-height-option .option-label,
-.word-spacing-option .option-label {
-    flex: 1;
-}
-
-/* 开关按钮样式 */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 26px;
-    flex-shrink: 0;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #e0e0e0;
-    transition: var(--transition);
-    border-radius: 26px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: var(--transition);
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-input:checked + .slider {
-    background-color: var(--primary-color);
-}
-
-input:checked + .slider:before {
-    transform: translateX(22px);
-}
-
-input:focus + .slider {
-    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
-}
-
-/* 滑块样式 */
-input[type="range"] {
-    -webkit-appearance: none;
-    width: 90px;
-    height: 5px;
-    border-radius: 3px;
-    background: #e0e0e0;
-    outline: none;
-    transition: var(--transition);
-    flex-shrink: 0;
-}
-
-input[type="range"]:hover {
-    background: #d0d0d0;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-    background: var(--primary-hover);
-    transform: scale(1.1);
-}
-
-input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    cursor: pointer;
-    border: none;
-    transition: var(--transition);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-input[type="range"]::-moz-range-thumb:hover {
-    background: var(--primary-hover);
-    transform: scale(1.1);
-}
-
-/* 下拉选择框样式 */
-.dark-level-select {
-    padding: 6px 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background-color: white;
-    font-size: 13px;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: var(--transition);
-    min-width: 100px;
-    outline: none;
-}
-
-.dark-level-select:hover {
-    border-color: var(--primary-color);
-}
-
-.dark-level-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
-}
-
-/* 功能按钮样式 */
-.action-button,
-.adguard-button {
-    padding: 6px 14px;
-    border: 1px solid var(--primary-color);
-    border-radius: 6px;
-    background-color: white;
+.nav-item.active .nav-text {
     color: var(--primary-color);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    min-width: 60px;
-    outline: none;
-}
-
-.action-button:hover,
-.adguard-button:hover:not(:disabled) {
-    background-color: var(--primary-color);
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.25);
-}
-
-.action-button:active,
-.adguard-button:active {
-    transform: translateY(0);
-}
-
-.adguard-button:disabled {
-    background-color: #f0f0f0;
-    color: var(--text-light);
-    cursor: not-allowed;
-    border-color: #e0e0e0;
-    transform: none;
-    box-shadow: none;
-}
-
-/* AdGuard 集成样式 */
-.adguard-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.adguard-status {
-    display: flex;
-    align-items: center;
-    padding: 12px 14px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-
-.status-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-right: 8px;
-}
-
-.status-text {
-    font-size: 13px;
-    color: var(--text-primary);
     font-weight: 600;
 }
 
-.adguard-status-installed .status-text {
-    color: var(--success-color);
+.nav-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
 }
 
-.adguard-status-not-installed .status-text {
-    color: var(--error-color);
+.nav-text {
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: var(--transition);
 }
 
-/* 响应式设计 */
-@media (max-width: 380px) {
-    body {
-        padding: 12px;
-    }
-    
-    .container {
-        padding: 16px;
-    }
-    
-    .section {
-        padding: 12px;
-    }
-    
-    .option {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .option-label {
-        width: 100%;
-    }
-    
-    .font-size-option,
-    .line-height-option,
-    .word-spacing-option {
-        flex-direction: row;
-        align-items: center;
-    }
-    
-    input[type="range"] {
-        width: 100%;
-    }
+/* ============================================
+   Content Area
+   ============================================ */
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 32px;
+    background: var(--bg-primary);
 }
 
-/* 动画效果 */
+.content-section {
+    display: none;
+    animation: fadeIn 0.2s ease;
+}
+
+.content-section.active {
+    display: block;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
@@ -391,47 +165,415 @@ input[type="range"]::-moz-range-thumb:hover {
     }
 }
 
-.container {
-    animation: fadeIn 0.3s ease-out;
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
 }
 
-.section {
-    animation: fadeIn 0.4s ease-out;
+.section-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
 }
 
-.section:nth-child(2) { animation-delay: 0.05s; }
-.section:nth-child(3) { animation-delay: 0.1s; }
-.section:nth-child(4) { animation-delay: 0.15s; }
-.section:nth-child(5) { animation-delay: 0.2s; }
-.section:nth-child(6) { animation-delay: 0.25s; }
-.section:nth-child(7) { animation-delay: 0.3s; }
-
-/* 深色模式模块特殊样式 */
-.dark-mode-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+/* ============================================
+   Setting Cards
+   ============================================ */
+.setting-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 16px 0;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
 }
 
-/* 阅读净化模块特殊样式 */
-.reading-section {
-    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 0 20px 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
 }
 
-/* 视频工具模块特殊样式 */
-.video-section {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    transition: var(--transition);
 }
 
-/* 隐私安全模块特殊样式 */
-.privacy-section {
-    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+.setting-item:hover {
+    background: var(--bg-hover);
 }
 
-/* 实用工具模块特殊样式 */
-.tools-section {
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+.setting-item.slider-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
 }
 
-/* AdGuard 模块特殊样式 */
-.adguard-section {
-    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+.setting-item.slider-item .setting-info {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.setting-item.action-item {
+    padding: 12px 20px;
+}
+
+.setting-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.setting-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.setting-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.setting-value {
+    font-size: 13px;
+    color: var(--primary-color);
+    font-weight: 500;
+    min-width: 50px;
+    text-align: right;
+}
+
+/* ============================================
+   Toggle Switch
+   ============================================ */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #c4c4c4;
+    transition: var(--transition);
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: var(--transition);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: var(--primary-color);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+.toggle-switch input:focus + .toggle-slider {
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* ============================================
+   Select Dropdown
+   ============================================ */
+.setting-select {
+    padding: 8px 32px 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    min-width: 120px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23605e5c' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: var(--transition);
+}
+
+.setting-select:hover {
+    border-color: var(--primary-color);
+}
+
+.setting-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* ============================================
+   Range Slider
+   ============================================ */
+.setting-slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.setting-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.setting-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0, 120, 212, 0.4);
+}
+
+.setting-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   Action Buttons
+   ============================================ */
+.action-btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-color);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+.action-btn:active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.action-btn.danger {
+    color: #d13438;
+    border-color: #d13438;
+}
+
+.action-btn.danger:hover {
+    background: #fde7e9;
+}
+
+.action-btn.danger:active {
+    background: #d13438;
+    color: white;
+}
+
+/* ============================================
+   AdGuard Section
+   ============================================ */
+.adguard-status-box {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--bg-hover);
+    border-radius: var(--radius-sm);
+    margin-bottom: 16px;
+}
+
+.status-icon {
+    font-size: 32px;
+}
+
+.status-info {
+    flex: 1;
+}
+
+.status-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.status-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--bg-active);
+    border-radius: 12px;
+}
+
+.adguard-message {
+    padding: 0 4px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.adguard-message p {
+    margin-bottom: 8px;
+}
+
+.adguard-message p:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================
+   Scrollbar Styles
+   ============================================ */
+.content-area::-webkit-scrollbar,
+.nav-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content-area::-webkit-scrollbar-track,
+.nav-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.content-area::-webkit-scrollbar-thumb,
+.nav-menu::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    border-radius: 4px;
+}
+
+.content-area::-webkit-scrollbar-thumb:hover,
+.nav-menu::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 600px) {
+    .popup-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+    
+    .sidebar-nav {
+        width: 60px;
+    }
+    
+    .nav-text,
+    .logo-text {
+        display: none;
+    }
+    
+    .nav-item {
+        justify-content: center;
+        padding: 12px;
+    }
+    
+    .nav-icon {
+        margin: 0;
+    }
+    
+    .content-area {
+        padding: 16px 20px;
+    }
+}
+
+/* ============================================
+   Focus States for Accessibility
+   ============================================ */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   Disabled States
+   ============================================ */
+button:disabled,
+select:disabled,
+input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   Loading State
+   ============================================ */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

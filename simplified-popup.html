@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdGuard Dev Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #323130;
+            background: #f3f2f1;
+            width: 600px;
+            height: 500px;
+            overflow: hidden;
+        }
+        .popup-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .sidebar-nav {
+            width: 220px;
+            background: white;
+            border-right: 1px solid #e1dfdd;
+        }
+        .nav-menu {
+            list-style: none;
+            padding: 8px 0;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .nav-item:hover {
+            background: #f0f0f0;
+        }
+        .nav-item.active {
+            background: #e5f1fb;
+            color: #0078d4;
+        }
+        .content-area {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+        }
+        .setting-info {
+            flex: 1;
+        }
+        .setting-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .setting-desc {
+            font-size: 12px;
+            color: #605e5c;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #c4c4c4;
+            transition: .2s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #0078d4;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-container">
+        <!-- 左侧导航栏 -->
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item active" data-section="dark-mode">
+                    <span>🌙</span>
+                    <span>深色模式</span>
+                </li>
+                <li class="nav-item" data-section="reading">
+                    <span>📖</span>
+                    <span>阅读净化</span>
+                </li>
+                <li class="nav-item" data-section="video">
+                    <span>🎬</span>
+                    <span>视频工具</span>
+                </li>
+                <li class="nav-item" data-section="privacy">
+                    <span>🔒</span>
+                    <span>隐私安全</span>
+                </li>
+                <li class="nav-item" data-section="tools">
+                    <span>🛠️</span>
+                    <span>实用工具</span>
+                </li>
+                <li class="nav-item" data-section="adguard">
+                    <span>🛡️</span>
+                    <span>AdGuard 集成</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 右侧内容区 -->
+        <main class="content-area">
+            <!-- 深色模式 -->
+            <section id="dark-mode" class="content-section active">
+                <h2>深色模式</h2>
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">深色模式</div>
+                            <div class="setting-desc">为当前网页启用深色模式</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 阅读净化 -->
+            <section id="reading" class="content-section">
+                <h2>阅读净化</h2>
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">专注阅读</div>
+                            <div class="setting-desc">隐藏广告、侧边栏等干扰元素</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 视频工具 -->
+            <section id="video" class="content-section">
+                <h2>视频工具</h2>
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">视频增强</div>
+                            <div class="setting-desc">强制显示视频控制栏</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 隐私安全 -->
+            <section id="privacy" class="content-section">
+                <h2>隐私安全</h2>
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">清除跟踪参数</div>
+                            <div class="setting-desc">自动移除URL中的跟踪参数</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 实用工具 -->
+            <section id="tools" class="content-section">
+                <h2>实用工具</h2>
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">页面净化</div>
+                            <div class="setting-desc">移除页面中的广告和弹窗</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AdGuard 集成 -->
+            <section id="adguard" class="content-section">
+                <h2>AdGuard 集成</h2>
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-name">AdGuard 集成</div>
+                            <div class="setting-desc">功能未实现</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="popup-logic.js"></script>
+</body>
+</html>
